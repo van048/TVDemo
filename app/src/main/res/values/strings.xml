@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">TVDemo</string>
-    <string name="navigation_view_header_title">TV Demo</string>
     <string name="shows_title">Shows</string>
     <string name="favorite_title">Favorite</string>
+    <string name="settings_title">Settings</string>
 </resources>

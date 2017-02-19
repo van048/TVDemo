@@ -2,14 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     >
     <item
+        android:id="@+id/menu_item_shows"
         android:icon="@drawable/ic_shows"
         android:title="@string/shows_title"/>
 
     <item
+        android:id="@+id/menu_item_fav"
         android:icon="@drawable/ic_fav"
         android:title="@string/favorite_title"/>
 
     <item
+        android:id="@+id/menu_item_settings"
         android:icon="@drawable/ic_settings"
         android:title="@string/settings_title"/>
 </menu>

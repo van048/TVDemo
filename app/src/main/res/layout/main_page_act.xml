@@ -6,14 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".shows.MainPageActivity">
+    tools:context=".mainpage.MainPageActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/mToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/colorPrimary"
@@ -30,11 +30,10 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <FrameLayout
-            android:id="@+id/contentFrame"
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-
 
         <!--<android.support.design.widget.FloatingActionButton-->
         <!--android:layout_width="wrap_content"-->
@@ -43,11 +42,12 @@
     </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
-        android:background="@drawable/bottom_background"
-        app:itemIconTint="@drawable/bottom_item_icon_tint"
-        app:itemTextColor="@drawable/bottom_item_icon_tint"
-        app:menu="@menu/drawer_actions"/>
+        android:background="@drawable/bottom_menu_background"
+        app:itemIconTint="@drawable/bottom_menu_item_icon_tint"
+        app:itemTextColor="@drawable/bottom_menu_item_icon_tint"
+        app:menu="@menu/menu_bottom"/>
 
 </LinearLayout>

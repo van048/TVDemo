@@ -29,17 +29,16 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
+
+    @Override
+    public void onPageSelected(int position) {
         if (position == prevSelectedMenuItemPos) return;
         if (prevSelectedMenuItemPos >= 0 && prevSelectedMenuItemPos < mBottomNavigationView.getMenu().size())
             mBottomNavigationView.getMenu().getItem(prevSelectedMenuItemPos).setChecked(false);
         if (position >= 0 && position < mBottomNavigationView.getMenu().size())
             mBottomNavigationView.getMenu().getItem(position).setChecked(true);
         prevSelectedMenuItemPos = position;
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-
     }
 
     @Override

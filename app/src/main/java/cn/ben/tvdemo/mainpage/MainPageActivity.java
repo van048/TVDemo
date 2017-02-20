@@ -3,6 +3,9 @@ package cn.ben.tvdemo.mainpage;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -84,26 +87,20 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         MainPagePagerAdapter viewPagerAdapter = new MainPagePagerAdapter(getSupportFragmentManager());
 
-        ShowsFragment showsFragment = (ShowsFragment) viewPagerAdapter.getItem(SHOWS_FRAGMENT_POS);
-        if (showsFragment == null) {
-            showsFragment = ShowsFragment.newInstance();
-            viewPagerAdapter.setFragment(SHOWS_FRAGMENT_POS, showsFragment);
-        }
+        // http://stackoverflow.com/questions/14035090/how-to-get-existing-fragments-when-using-fragmentpageradapter/41345283#41345283
+        viewPagerAdapter.startUpdate(mViewPager);
+
+        ShowsFragment showsFragment = (ShowsFragment) viewPagerAdapter.instantiateItem(mViewPager, SHOWS_FRAGMENT_POS);
         mShowsPresenter = new ShowsPresenter(showsFragment); // TODO: 2017/2/19
 
-        FavoriteFragment favoriteFragment = (FavoriteFragment) viewPagerAdapter.getItem(FAV_FRAGMENT_POS);
-        if (favoriteFragment == null) {
-            favoriteFragment = FavoriteFragment.newInstance();
-            viewPagerAdapter.setFragment(FAV_FRAGMENT_POS, favoriteFragment);
-        }
+        FavoriteFragment favoriteFragment = (FavoriteFragment) viewPagerAdapter.instantiateItem(mViewPager, FAV_FRAGMENT_POS);
         mFavoritePresenter = new FavoritePresenter(favoriteFragment); // TODO: 2017/2/19
 
-        SettingsFragment settingsFragment = (SettingsFragment) viewPagerAdapter.getItem(SETTINGS_FRAGMENT_POS);
-        if (settingsFragment == null) {
-            settingsFragment = SettingsFragment.newInstance();
-            viewPagerAdapter.setFragment(SETTINGS_FRAGMENT_POS, settingsFragment);
-        }
+        SettingsFragment settingsFragment = (SettingsFragment) viewPagerAdapter.instantiateItem(mViewPager, SETTINGS_FRAGMENT_POS);
         mSettingsPresenter = new SettingsPresenter(settingsFragment); // TODO: 2017/2/19
+
+        viewPagerAdapter.finishUpdate(mViewPager);
+        // finish
 
         mViewPager.setAdapter(viewPagerAdapter);
         mViewPager.addOnPageChangeListener(this);
@@ -125,5 +122,33 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
                 break;
         }
         return true;
+    }
+
+    class MainPagePagerAdapter extends FragmentPagerAdapter {
+
+        MainPagePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            if (position == SHOWS_FRAGMENT_POS.ordinal()) {
+                return ShowsFragment.newInstance();
+            } else if (position == FAV_FRAGMENT_POS.ordinal()){
+                return FavoriteFragment.newInstance();
+            } else if (position == SETTINGS_FRAGMENT_POS.ordinal()) {
+                return SettingsFragment.newInstance();
+            }
+            return null;
+        }
+
+        @Override
+        public int getCount() {
+            return FragmentPosition.values().length;
+        }
+
+        Object instantiateItem(ViewPager container, MainPageActivity.FragmentPosition position) {
+            return instantiateItem(container, position.ordinal());
+        }
     }
 }

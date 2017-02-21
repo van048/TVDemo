@@ -9,10 +9,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-class TVTypesRemoteDataSource implements TVTypesDataSource {
+public class TVTypesRemoteDataSource implements TVTypesDataSource {
     private static final String LOAD_TV_TYPE_BASE_URL = "http://api.avatardata.cn/TVTime/";
     private static TVTypesRemoteDataSource instance = null;
 
@@ -34,6 +35,7 @@ class TVTypesRemoteDataSource implements TVTypesDataSource {
     public void getTVTypes(@NonNull final LoadTVTypesCallback loadTVTypesCallback) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(LOAD_TV_TYPE_BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
         TVTypesService service = retrofit.create(TVTypesService.class);
         Call<TVTypes> call = service.getTVTypes(Constants.API_KEY);

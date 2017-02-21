@@ -12,6 +12,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import cn.ben.tvdemo.R;
+import cn.ben.tvdemo.data.tvtype.source.TVTypesRepository;
+import cn.ben.tvdemo.data.tvtype.source.local.TVTypesLocalDataSource;
+import cn.ben.tvdemo.data.tvtype.source.remote.TVTypesRemoteDataSource;
 import cn.ben.tvdemo.favorite.FavoriteFragment;
 import cn.ben.tvdemo.favorite.FavoritePresenter;
 import cn.ben.tvdemo.settings.SettingsFragment;
@@ -91,7 +94,7 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
         viewPagerAdapter.startUpdate(mViewPager);
 
         ShowsFragment showsFragment = (ShowsFragment) viewPagerAdapter.instantiateItem(mViewPager, SHOWS_FRAGMENT_POS);
-        mShowsPresenter = new ShowsPresenter(showsFragment); // TODO: 2017/2/19
+        mShowsPresenter = new ShowsPresenter(TVTypesRepository.getInstance(TVTypesRemoteDataSource.getInstance(), TVTypesLocalDataSource.getInstance(this)), showsFragment); // TODO: 2017/2/19
 
         FavoriteFragment favoriteFragment = (FavoriteFragment) viewPagerAdapter.instantiateItem(mViewPager, FAV_FRAGMENT_POS);
         mFavoritePresenter = new FavoritePresenter(favoriteFragment); // TODO: 2017/2/19
@@ -134,7 +137,7 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
         public Fragment getItem(int position) {
             if (position == SHOWS_FRAGMENT_POS.ordinal()) {
                 return ShowsFragment.newInstance();
-            } else if (position == FAV_FRAGMENT_POS.ordinal()){
+            } else if (position == FAV_FRAGMENT_POS.ordinal()) {
                 return FavoriteFragment.newInstance();
             } else if (position == SETTINGS_FRAGMENT_POS.ordinal()) {
                 return SettingsFragment.newInstance();

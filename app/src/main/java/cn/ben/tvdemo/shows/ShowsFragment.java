@@ -11,7 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cn.ben.tvdemo.R;
+import cn.ben.tvdemo.data.tvtype.TVTypes;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -51,7 +55,26 @@ public class ShowsFragment extends Fragment implements ShowsContract.View {
         mPresenter.start();
     }
 
+    @Override
+    public void changeLoadingUI(boolean shown) {
+
+    }
+
+    @Override
+    public void showTVTypes(List<TVTypes.TVType> tvTypes) {
+        mAdapter.updateData(tvTypes);
+    }
+
+    @Override
+    public void showErrorUI(String reason) {
+    }
+
     private class TVTypeAdapter extends RecyclerView.Adapter<TVTypeAdapter.ViewHolder> {
+        private List<TVTypes.TVType> mTVTypes;
+
+        TVTypeAdapter() {
+            mTVTypes = new ArrayList<>();
+        }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -61,12 +84,18 @@ public class ShowsFragment extends Fragment implements ShowsContract.View {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            holder.mTextView.setText(String.valueOf(position));// TODO: 2017/2/21
+            holder.mTextView.setText(mTVTypes.get(position).getName());
         }
 
         @Override
         public int getItemCount() {
-            return 6; // TODO: 2017/2/21
+            return mTVTypes.size();
+        }
+
+        void updateData(List<TVTypes.TVType> tvTypes) {
+            mTVTypes.clear();
+            mTVTypes.addAll(tvTypes);
+            notifyDataSetChanged();
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {

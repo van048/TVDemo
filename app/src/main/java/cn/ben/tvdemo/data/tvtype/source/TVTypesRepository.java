@@ -11,7 +11,7 @@ import cn.ben.tvdemo.data.tvtype.TVTypes;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-class TVTypesRepository implements TVTypesDataSource {
+public class TVTypesRepository implements TVTypesDataSource {
     private static TVTypesRepository instance = null;
     private final TVTypesDataSource mTVTypesRemoteDataSource;
     private final TVTypesDataSource mTVTypesLocalDataSource;
@@ -120,5 +120,9 @@ class TVTypesRepository implements TVTypesDataSource {
         for (TVTypes.TVType tvType : tvTypes) {
             mTVTypesLocalDataSource.saveTVType(tvType);
         }
+    }
+
+    public void invalidCache() {
+        mCacheIsDirty = true;
     }
 }

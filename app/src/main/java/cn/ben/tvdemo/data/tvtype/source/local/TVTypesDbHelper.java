@@ -14,7 +14,7 @@ public class TVTypesDbHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + TABLE_NAME + " (" +
                     _ID + DATABASE_TEXT_TYPE + " PRIMARY KEY," +
                     COLUMN_ID + DATABASE_TEXT_TYPE + DATABASE_COMMA_SEP +
-                    COLUMN_NAME + DATABASE_TEXT_TYPE + " )";
+                    COLUMN_NAME + DATABASE_TEXT_TYPE + ")";
 
     public TVTypesDbHelper(Context context) {
         super(context, Constants.DATABASE_NAME, null, Constants.DATABASE_VERSION);

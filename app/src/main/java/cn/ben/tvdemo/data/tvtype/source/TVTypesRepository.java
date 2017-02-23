@@ -103,8 +103,8 @@ public class TVTypesRepository implements TVTypesDataSource {
         mTVTypesRemoteDataSource.getTVTypes(new LoadTVTypesCallback() {
             @Override
             public void onTVTypesLoaded(List<TVTypes.TVType> tvTypes) {
-                refreshCache(tvTypes);
                 refreshLocalDataSource(tvTypes);
+                refreshCache(tvTypes);
                 callback.onTVTypesLoaded(new ArrayList<>(mCachedTVTypes.values()));
             }
 

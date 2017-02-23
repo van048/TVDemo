@@ -78,7 +78,24 @@ public class TVTypesLocalDataSource implements TVTypesDataSource {
     public void saveTVType(@NonNull TVTypes.TVType tvType) {
         checkNotNull(tvType);
 
-        SQLiteDatabase sqLiteDatabase = mDbHelper.getWritableDatabase();
+        // make sure only each entry has unique ID
+        SQLiteDatabase sqLiteDatabase = mDbHelper.getReadableDatabase();
+        Cursor cursor = sqLiteDatabase.query(
+                TABLE_NAME,
+                new String[]{COLUMN_ID},
+                COLUMN_ID + "=?",
+                new String[]{tvType.getId()}, null, null, null);
+        if (cursor != null && cursor.getCount() > 1) {
+            cursor.close();
+            sqLiteDatabase.close();
+            throw new AssertionError("Duplicated TV Type ID");
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+        sqLiteDatabase.close();
+
+        sqLiteDatabase = mDbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_ID, tvType.getId());
         contentValues.put(COLUMN_NAME, tvType.getName());

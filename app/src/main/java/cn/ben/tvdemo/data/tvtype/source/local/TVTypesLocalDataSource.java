@@ -18,7 +18,7 @@ import static cn.ben.tvdemo.data.tvtype.source.local.TVTypesPersistenceContract.
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class TVTypesLocalDataSource implements TVTypesDataSource {
-    private static TVTypesLocalDataSource instance = null;
+    private volatile static TVTypesLocalDataSource instance = null;
     private TVTypesDbHelper mDbHelper;
 
     public static TVTypesLocalDataSource getInstance(@NonNull Context context) {

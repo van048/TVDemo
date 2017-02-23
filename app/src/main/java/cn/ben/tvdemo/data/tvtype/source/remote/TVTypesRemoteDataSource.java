@@ -15,7 +15,7 @@ import retrofit2.http.Query;
 
 public class TVTypesRemoteDataSource implements TVTypesDataSource {
     private static final String LOAD_TV_TYPE_BASE_URL = "http://api.avatardata.cn/TVTime/";
-    private static TVTypesRemoteDataSource instance = null;
+    private volatile static TVTypesRemoteDataSource instance = null;
 
     public static TVTypesRemoteDataSource getInstance() {
         if (instance == null) {

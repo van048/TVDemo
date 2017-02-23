@@ -12,7 +12,7 @@ import cn.ben.tvdemo.data.tvtype.TVTypes;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class TVTypesRepository implements TVTypesDataSource {
-    private static TVTypesRepository instance = null;
+    private volatile static TVTypesRepository instance = null;
     private final TVTypesDataSource mTVTypesRemoteDataSource;
     private final TVTypesDataSource mTVTypesLocalDataSource;
 

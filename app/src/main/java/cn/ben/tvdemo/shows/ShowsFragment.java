@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,7 @@ public class ShowsFragment extends Fragment implements ShowsContract.View {
 
     @Override
     public void changeLoadingUI(boolean shown) {
-
+        // TODO: 2017/2/23
     }
 
     @Override
@@ -67,6 +68,8 @@ public class ShowsFragment extends Fragment implements ShowsContract.View {
 
     @Override
     public void showErrorUI(String reason) {
+        // TODO: 2017/2/23  
+        Toast.makeText(getContext(), reason, Toast.LENGTH_SHORT).show();
     }
 
     private class TVTypeAdapter extends RecyclerView.Adapter<TVTypeAdapter.ViewHolder> {

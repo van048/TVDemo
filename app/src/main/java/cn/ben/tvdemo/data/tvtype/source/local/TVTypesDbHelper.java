@@ -9,14 +9,14 @@ import cn.ben.tvdemo.constant.Constants;
 import static cn.ben.tvdemo.constant.Constants.*;
 import static cn.ben.tvdemo.data.tvtype.source.local.TVTypesPersistenceContract.TVTypeEntry.*;
 
-public class TVTypesDbHelper extends SQLiteOpenHelper {
+class TVTypesDbHelper extends SQLiteOpenHelper {
     private final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     _ID + DATABASE_TEXT_TYPE + " PRIMARY KEY," +
                     COLUMN_ID + DATABASE_TEXT_TYPE + DATABASE_COMMA_SEP +
                     COLUMN_NAME + DATABASE_TEXT_TYPE + ")";
 
-    public TVTypesDbHelper(Context context) {
+    TVTypesDbHelper(Context context) {
         super(context, Constants.DATABASE_NAME, null, Constants.DATABASE_VERSION);
     }
 

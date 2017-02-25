@@ -33,4 +33,5 @@ ext {
     espressoVersion = '2.2.2'
     junitVersion = '4.12'
     retrofitVersion = '2.1.0'
+    butterknifeVersion = '8.5.1'
 }

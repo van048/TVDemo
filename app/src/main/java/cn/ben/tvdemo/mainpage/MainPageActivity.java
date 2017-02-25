@@ -11,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cn.ben.tvdemo.R;
 import cn.ben.tvdemo.data.tvtype.source.TVTypesRepository;
 import cn.ben.tvdemo.data.tvtype.source.local.TVTypesLocalDataSource;
@@ -28,11 +30,93 @@ import static cn.ben.tvdemo.mainpage.MainPageActivity.FragmentPosition.SHOWS_FRA
 
 public class MainPageActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, ViewPager.OnPageChangeListener {
 
-    private ViewPager mViewPager;
-    private BottomNavigationView mBottomNavigationView;
+    @BindView(R.id.viewpager)
+    ViewPager mViewPager;
+    @BindView(R.id.bottom_nav)
+    BottomNavigationView mBottomNavigationView;
+    @BindView(R.id.mToolbar)
+    Toolbar mToolbar;
 
     private int prevSelectedMenuItemPos = -1;
 
+    private ShowsPresenter mShowsPresenter;
+    private FavoritePresenter mFavoritePresenter;
+    private SettingsPresenter mSettingsPresenter;
+
+    enum FragmentPosition {
+        SHOWS_FRAGMENT_POS,
+        FAV_FRAGMENT_POS,
+        SETTINGS_FRAGMENT_POS
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main_page_act);
+
+        ButterKnife.bind(this);
+
+        setupActionBar();
+
+        setupViewPager();
+        bindBottomNavigationWithPager();
+
+        if (savedInstanceState != null) {
+            // TODO: 2017/2/19 load previously saved state
+        }
+    }
+
+    private void setupActionBar() {
+        setSupportActionBar(mToolbar);
+    }
+
+    private void bindBottomNavigationWithPager() {
+        mBottomNavigationView.setOnNavigationItemSelectedListener(this);
+    }
+
+    private void setupViewPager() {
+        MainPagePagerAdapter viewPagerAdapter = new MainPagePagerAdapter(getSupportFragmentManager());
+        mViewPager.setAdapter(viewPagerAdapter);
+
+        // http://stackoverflow.com/questions/14035090/how-to-get-existing-fragments-when-using-fragmentpageradapter/41345283#41345283
+        viewPagerAdapter.startUpdate(mViewPager);
+
+        ShowsFragment showsFragment = (ShowsFragment) viewPagerAdapter.instantiateItem(mViewPager, SHOWS_FRAGMENT_POS);
+        mShowsPresenter = new ShowsPresenter(TVTypesRepository.getInstance(TVTypesRemoteDataSource.getInstance(), TVTypesLocalDataSource.getInstance(this)), showsFragment); // TODO: 2017/2/19
+
+        FavoriteFragment favoriteFragment = (FavoriteFragment) viewPagerAdapter.instantiateItem(mViewPager, FAV_FRAGMENT_POS);
+        mFavoritePresenter = new FavoritePresenter(favoriteFragment); // TODO: 2017/2/19
+
+        SettingsFragment settingsFragment = (SettingsFragment) viewPagerAdapter.instantiateItem(mViewPager, SETTINGS_FRAGMENT_POS);
+        mSettingsPresenter = new SettingsPresenter(settingsFragment); // TODO: 2017/2/19
+
+        viewPagerAdapter.finishUpdate(mViewPager);
+        // finish
+
+        mViewPager.addOnPageChangeListener(this);
+    }
+
+    // BottomNavigationView.OnNavigationItemSelectedListener start
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_shows:
+                mViewPager.setCurrentItem(SHOWS_FRAGMENT_POS.ordinal());
+                break;
+            case R.id.menu_item_fav:
+                mViewPager.setCurrentItem(FAV_FRAGMENT_POS.ordinal());
+                break;
+            case R.id.menu_item_settings:
+                mViewPager.setCurrentItem(SETTINGS_FRAGMENT_POS.ordinal());
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
+    // BottomNavigationView.OnNavigationItemSelectedListener end
+
+    // ViewPager.OnPageChangeListener start
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
     }
@@ -51,81 +135,7 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
     public void onPageScrollStateChanged(int state) {
 
     }
-
-    enum FragmentPosition {
-        SHOWS_FRAGMENT_POS,
-        FAV_FRAGMENT_POS,
-        SETTINGS_FRAGMENT_POS
-    }
-
-    private ShowsPresenter mShowsPresenter;
-    private FavoritePresenter mFavoritePresenter;
-    private SettingsPresenter mSettingsPresenter;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_page_act);
-
-        setupActionBar();
-        setupViewPager();
-        bindBottomNavigationWithPager();
-
-        if (savedInstanceState != null) {
-            // TODO: 2017/2/19 load previously saved state
-        }
-    }
-
-    private void setupActionBar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.mToolbar);
-        setSupportActionBar(toolbar);
-    }
-
-    private void bindBottomNavigationWithPager() {
-        mBottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_nav);
-        mBottomNavigationView.setOnNavigationItemSelectedListener(this);
-    }
-
-    private void setupViewPager() {
-        mViewPager = (ViewPager) findViewById(R.id.viewpager);
-        MainPagePagerAdapter viewPagerAdapter = new MainPagePagerAdapter(getSupportFragmentManager());
-
-        // http://stackoverflow.com/questions/14035090/how-to-get-existing-fragments-when-using-fragmentpageradapter/41345283#41345283
-        viewPagerAdapter.startUpdate(mViewPager);
-
-        ShowsFragment showsFragment = (ShowsFragment) viewPagerAdapter.instantiateItem(mViewPager, SHOWS_FRAGMENT_POS);
-        mShowsPresenter = new ShowsPresenter(TVTypesRepository.getInstance(TVTypesRemoteDataSource.getInstance(), TVTypesLocalDataSource.getInstance(this)), showsFragment); // TODO: 2017/2/19
-
-        FavoriteFragment favoriteFragment = (FavoriteFragment) viewPagerAdapter.instantiateItem(mViewPager, FAV_FRAGMENT_POS);
-        mFavoritePresenter = new FavoritePresenter(favoriteFragment); // TODO: 2017/2/19
-
-        SettingsFragment settingsFragment = (SettingsFragment) viewPagerAdapter.instantiateItem(mViewPager, SETTINGS_FRAGMENT_POS);
-        mSettingsPresenter = new SettingsPresenter(settingsFragment); // TODO: 2017/2/19
-
-        viewPagerAdapter.finishUpdate(mViewPager);
-        // finish
-
-        mViewPager.setAdapter(viewPagerAdapter);
-        mViewPager.addOnPageChangeListener(this);
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_item_shows:
-                mViewPager.setCurrentItem(SHOWS_FRAGMENT_POS.ordinal());
-                break;
-            case R.id.menu_item_fav:
-                mViewPager.setCurrentItem(FAV_FRAGMENT_POS.ordinal());
-                break;
-            case R.id.menu_item_settings:
-                mViewPager.setCurrentItem(SETTINGS_FRAGMENT_POS.ordinal());
-                break;
-            default:
-                break;
-        }
-        return true;
-    }
+    // ViewPager.OnPageChangeListener end
 
     class MainPagePagerAdapter extends FragmentPagerAdapter {
 

@@ -14,15 +14,22 @@ public class ShowsPresenter implements ShowsContract.Presenter {
     private final ShowsContract.View mShowsView;
     private final TVTypesRepository mRepository;
 
-    public ShowsPresenter(@NonNull TVTypesRepository repository, @NonNull ShowsContract.View showsView) {
+    public ShowsPresenter(@NonNull TVTypesRepository repository, @NonNull ShowsContract.View showsView, boolean refreshWhenInit) {
         mShowsView = checkNotNull(showsView);
         mRepository = checkNotNull(repository);
 
         mShowsView.setPresenter(this);
+        if (refreshWhenInit) {
+            refreshTVTypes();
+        }
     }
 
     @Override
     public void start() {
+    }
+
+    @Override
+    public void refreshTVTypes() {
         mShowsView.changeLoadingUI(true);
         mRepository.getTVTypes(new TVTypesDataSource.LoadTVTypesCallback() {
             @Override

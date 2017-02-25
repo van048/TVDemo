@@ -1,5 +1,6 @@
 package cn.ben.tvdemo.shows;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -68,8 +69,10 @@ public class ShowsFragment extends Fragment implements ShowsContract.View {
 
     @Override
     public void showErrorUI(String reason) {
-        // TODO: 2017/2/23  
-        Toast.makeText(getContext(), reason, Toast.LENGTH_SHORT).show();
+        // TODO: 2017/2/23
+        Context context = getContext();
+        if (context != null)
+            Toast.makeText(context, reason, Toast.LENGTH_SHORT).show();
     }
 
     private class TVTypeAdapter extends RecyclerView.Adapter<TVTypeAdapter.ViewHolder> {

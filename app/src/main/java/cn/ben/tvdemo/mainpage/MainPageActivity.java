@@ -38,6 +38,7 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
     Toolbar mToolbar;
 
     private int prevSelectedMenuItemPos = -1;
+    private boolean mRefreshShowsWhenInit;
 
     private ShowsPresenter mShowsPresenter;
     private FavoritePresenter mFavoritePresenter;
@@ -51,6 +52,13 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            // TODO: 2017/2/19 load previously saved state
+            mRefreshShowsWhenInit = false;
+        } else {
+            mRefreshShowsWhenInit = true;
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_page_act);
 
@@ -60,10 +68,6 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
 
         setupViewPager();
         bindBottomNavigationWithPager();
-
-        if (savedInstanceState != null) {
-            // TODO: 2017/2/19 load previously saved state
-        }
     }
 
     private void setupActionBar() {
@@ -82,7 +86,7 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
         viewPagerAdapter.startUpdate(mViewPager);
 
         ShowsFragment showsFragment = (ShowsFragment) viewPagerAdapter.instantiateItem(mViewPager, SHOWS_FRAGMENT_POS);
-        mShowsPresenter = new ShowsPresenter(TVTypesRepository.getInstance(TVTypesRemoteDataSource.getInstance(), TVTypesLocalDataSource.getInstance(this)), showsFragment); // TODO: 2017/2/19
+        mShowsPresenter = new ShowsPresenter(TVTypesRepository.getInstance(TVTypesRemoteDataSource.getInstance(), TVTypesLocalDataSource.getInstance(this)), showsFragment, mRefreshShowsWhenInit); // TODO: 2017/2/19
 
         FavoriteFragment favoriteFragment = (FavoriteFragment) viewPagerAdapter.instantiateItem(mViewPager, FAV_FRAGMENT_POS);
         mFavoritePresenter = new FavoritePresenter(favoriteFragment); // TODO: 2017/2/19

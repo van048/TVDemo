@@ -64,17 +64,16 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
 
         ButterKnife.bind(this);
 
-        setupActionBar();
-
+        setupToolbar();
         setupViewPager();
-        bindBottomNavigationWithPager();
+        setupBottomNavigationView();
     }
 
-    private void setupActionBar() {
+    private void setupToolbar() {
         setSupportActionBar(mToolbar);
     }
 
-    private void bindBottomNavigationWithPager() {
+    private void setupBottomNavigationView() {
         mBottomNavigationView.setOnNavigationItemSelectedListener(this);
     }
 

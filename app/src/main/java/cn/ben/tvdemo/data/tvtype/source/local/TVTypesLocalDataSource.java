@@ -22,11 +22,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class TVTypesLocalDataSource implements TVTypesDataSource {
     private volatile static TVTypesLocalDataSource instance = null;
-    private TVTypesDbHelper mDbHelper;
+    private final TVTypesDbHelper mDbHelper;
 
-    private HandlerThread mDBThread;
-    private Handler mDBHandler;
-    private Handler mMainHandler;
+    private final HandlerThread mDBThread;
+    private final Handler mDBHandler;
+    private final Handler mMainHandler;
 
     public static TVTypesLocalDataSource getInstance(@NonNull Context context) {
         if (instance == null) {
@@ -139,12 +139,8 @@ public class TVTypesLocalDataSource implements TVTypesDataSource {
 
     @Override
     public void cleanup() {
-        if (mDBThread != null) {
-            mDBThread.quitSafely();
-        }
-        if (mDbHelper != null) {
-            mDbHelper.close();
-        }
+        mDBThread.quitSafely();
+        mDbHelper.close();
         instance = null;
     }
 }

@@ -91,7 +91,8 @@ public class TVTypesRepository implements TVTypesDataSource {
 
     @Override
     public void cleanup() {
-        mCachedTVTypes.clear();
+        if (mCachedTVTypes != null)
+            mCachedTVTypes.clear();
         mTVTypesLocalDataSource.cleanup();
         mTVTypesRemoteDataSource.cleanup();
     }

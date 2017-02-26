@@ -86,7 +86,7 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
         viewPagerAdapter.startUpdate(mViewPager);
 
         ShowsFragment showsFragment = (ShowsFragment) viewPagerAdapter.instantiateItem(mViewPager, SHOWS_FRAGMENT_POS);
-        mShowsPresenter = new ShowsPresenter(TVTypesRepository.getInstance(TVTypesRemoteDataSource.getInstance(), TVTypesLocalDataSource.getInstance(this)), showsFragment, SchedulerProvider.getINSTANCE()); // TODO: 2017/2/19
+        mShowsPresenter = new ShowsPresenter(TVTypesRepository.getInstance(TVTypesRemoteDataSource.getInstance(), TVTypesLocalDataSource.getInstance(this)), showsFragment, SchedulerProvider.getInstance()); // TODO: 2017/2/19
 
         FavoriteFragment favoriteFragment = (FavoriteFragment) viewPagerAdapter.instantiateItem(mViewPager, FAV_FRAGMENT_POS);
         mFavoritePresenter = new FavoritePresenter(favoriteFragment); // TODO: 2017/2/19

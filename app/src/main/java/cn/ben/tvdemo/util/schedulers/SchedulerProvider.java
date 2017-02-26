@@ -9,21 +9,21 @@ import io.reactivex.schedulers.Schedulers;
 
 public class SchedulerProvider implements BaseSchedulerProvider {
     @Nullable
-    private static volatile SchedulerProvider INSTANCE;
+    private static volatile SchedulerProvider instance;
 
     private SchedulerProvider() {
     }
 
     @Nullable
-    public static SchedulerProvider getINSTANCE() {
-        if (INSTANCE == null) {
+    public static SchedulerProvider getInstance() {
+        if (instance == null) {
             synchronized (SchedulerProvider.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new SchedulerProvider();
+                if (instance == null) {
+                    instance = new SchedulerProvider();
                 }
             }
         }
-        return INSTANCE;
+        return instance;
     }
 
     @NonNull

@@ -16,14 +16,18 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cn.ben.tvdemo.R;
 import cn.ben.tvdemo.data.tvtype.TVTypes;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ShowsFragment extends Fragment implements ShowsContract.View {
+    @BindView(R.id.tv_type_grid)
+    RecyclerView mRecyclerView;
+
     private ShowsContract.Presenter mPresenter;
-    private RecyclerView mRecyclerView;
     private TVTypeAdapter mAdapter;
 
     public static ShowsFragment newInstance() {
@@ -44,8 +48,8 @@ public class ShowsFragment extends Fragment implements ShowsContract.View {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ButterKnife.bind(this, view);
 
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.tv_type_grid);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         mAdapter = new TVTypeAdapter();
         mRecyclerView.setAdapter(mAdapter);
@@ -75,7 +79,7 @@ public class ShowsFragment extends Fragment implements ShowsContract.View {
             Toast.makeText(context, reason, Toast.LENGTH_SHORT).show();
     }
 
-    private class TVTypeAdapter extends RecyclerView.Adapter<TVTypeAdapter.ViewHolder> {
+    class TVTypeAdapter extends RecyclerView.Adapter<TVTypeAdapter.ViewHolder> {
         private List<TVTypes.TVType> mTVTypes;
 
         TVTypeAdapter() {
@@ -105,11 +109,12 @@ public class ShowsFragment extends Fragment implements ShowsContract.View {
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
-            final TextView mTextView;
+            @BindView(R.id.tv_type_grid_item_title)
+            TextView mTextView;
 
             ViewHolder(View itemView) {
                 super(itemView);
-                mTextView = (TextView) itemView.findViewById(R.id.tv_type_grid_item_title);
+                ButterKnife.bind(this, itemView);
             }
         }
     }

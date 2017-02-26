@@ -18,4 +18,6 @@ public interface TVTypesDataSource {
     void deleteAllTVTypes();
 
     void saveTVType(TVTypes.TVType tvType);
+
+    void cleanup();
 }

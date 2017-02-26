@@ -74,6 +74,11 @@ public class TVTypesRemoteDataSource implements TVTypesDataSource {
     public void saveTVType(TVTypes.TVType tvType) {
     }
 
+    @Override
+    public void cleanup() {
+        instance = null;
+    }
+
     interface TVTypesService {
         @GET("Query")
         Call<TVTypes> getTVTypes(@Query("key") String key);

@@ -99,6 +99,12 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
         mViewPager.addOnPageChangeListener(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        TVTypesRepository.destroyInstance();
+    }
+
     // BottomNavigationView.OnNavigationItemSelectedListener start
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {

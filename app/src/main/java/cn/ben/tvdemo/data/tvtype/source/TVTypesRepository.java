@@ -37,6 +37,7 @@ public class TVTypesRepository implements TVTypesDataSource {
     }
 
     public static void destroyInstance() {
+        instance.cleanup();
         instance = null;
     }
 
@@ -86,6 +87,13 @@ public class TVTypesRepository implements TVTypesDataSource {
             mCachedTVTypes = new HashMap<>();
         }
         mCachedTVTypes.put(tvType.getId(), tvType);
+    }
+
+    @Override
+    public void cleanup() {
+        mCachedTVTypes.clear();
+        mTVTypesLocalDataSource.cleanup();
+        mTVTypesRemoteDataSource.cleanup();
     }
 
     private void refreshCache(List<TVTypes.TVType> tvTypes) {

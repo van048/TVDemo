@@ -1,19 +1,13 @@
 package cn.ben.tvdemo.data.tvtype.source;
 
-import android.support.annotation.NonNull;
-
 import java.util.List;
 
 import cn.ben.tvdemo.data.tvtype.TVTypes;
+import io.reactivex.Observable;
 
 public interface TVTypesDataSource {
-    interface LoadTVTypesCallback {
-        void onTVTypesLoaded(List<TVTypes.TVType> tvTypes);
 
-        void onDataNotAvailable(String reason);
-    }
-
-    void getTVTypes(@NonNull LoadTVTypesCallback loadTVTypesCallback);
+    Observable<List<TVTypes.TVType>> getTVTypes();
 
     void deleteAllTVTypes();
 

@@ -1,5 +1,7 @@
 package cn.ben.tvdemo;
 
 public interface BasePresenter {
-    void start();
+    void subscribe();
+
+    void unSubscribe();
 }

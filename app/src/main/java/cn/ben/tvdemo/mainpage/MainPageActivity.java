@@ -23,6 +23,7 @@ import cn.ben.tvdemo.settings.SettingsFragment;
 import cn.ben.tvdemo.settings.SettingsPresenter;
 import cn.ben.tvdemo.shows.ShowsFragment;
 import cn.ben.tvdemo.shows.ShowsPresenter;
+import cn.ben.tvdemo.util.schedulers.SchedulerProvider;
 
 import static cn.ben.tvdemo.mainpage.MainPageActivity.FragmentPosition.FAV_FRAGMENT_POS;
 import static cn.ben.tvdemo.mainpage.MainPageActivity.FragmentPosition.SETTINGS_FRAGMENT_POS;
@@ -38,7 +39,7 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
     Toolbar mToolbar;
 
     private int prevSelectedMenuItemPos = -1;
-    private boolean mRefreshShowsWhenInit;
+    private boolean mCreatedFromSavedInstance;
 
     private ShowsPresenter mShowsPresenter;
     private FavoritePresenter mFavoritePresenter;
@@ -54,9 +55,9 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
     protected void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             // TODO: 2017/2/19 load previously saved state
-            mRefreshShowsWhenInit = false;
+            mCreatedFromSavedInstance = true;
         } else {
-            mRefreshShowsWhenInit = true;
+            mCreatedFromSavedInstance = false;
         }
 
         super.onCreate(savedInstanceState);
@@ -85,7 +86,7 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
         viewPagerAdapter.startUpdate(mViewPager);
 
         ShowsFragment showsFragment = (ShowsFragment) viewPagerAdapter.instantiateItem(mViewPager, SHOWS_FRAGMENT_POS);
-        mShowsPresenter = new ShowsPresenter(TVTypesRepository.getInstance(TVTypesRemoteDataSource.getInstance(), TVTypesLocalDataSource.getInstance(this)), showsFragment, mRefreshShowsWhenInit); // TODO: 2017/2/19
+        mShowsPresenter = new ShowsPresenter(TVTypesRepository.getInstance(TVTypesRemoteDataSource.getInstance(), TVTypesLocalDataSource.getInstance(this)), showsFragment, SchedulerProvider.getINSTANCE()); // TODO: 2017/2/19
 
         FavoriteFragment favoriteFragment = (FavoriteFragment) viewPagerAdapter.instantiateItem(mViewPager, FAV_FRAGMENT_POS);
         mFavoritePresenter = new FavoritePresenter(favoriteFragment); // TODO: 2017/2/19

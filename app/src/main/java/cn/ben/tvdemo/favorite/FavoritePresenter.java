@@ -13,7 +13,12 @@ public class FavoritePresenter implements FavoriteContract.Presenter {
     }
 
     @Override
-    public void start() {
+    public void subscribe() {
+
+    }
+
+    @Override
+    public void unSubscribe() {
 
     }
 }

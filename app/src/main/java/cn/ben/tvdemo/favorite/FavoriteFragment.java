@@ -27,7 +27,13 @@ public class FavoriteFragment extends Fragment implements FavoriteContract.View 
     @Override
     public void onResume() {
         super.onResume();
-        mPresenter.start();
+        mPresenter.subscribe();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mPresenter.unSubscribe();
     }
 
     @Nullable

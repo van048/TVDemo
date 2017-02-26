@@ -9,11 +9,11 @@ import cn.ben.tvdemo.data.tvtype.TVTypes;
 class ShowsContract {
     interface View extends BaseView<Presenter> {
 
-        void changeLoadingUI(boolean shown);
-
         void showTVTypes(List<TVTypes.TVType> tvTypes);
 
         void showErrorUI(String reason);
+
+        void stopRefreshing();
     }
 
     interface Presenter extends BasePresenter {

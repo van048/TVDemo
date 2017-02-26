@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,9 +24,11 @@ import cn.ben.tvdemo.data.tvtype.TVTypes;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class ShowsFragment extends Fragment implements ShowsContract.View {
+public class ShowsFragment extends Fragment implements ShowsContract.View, SwipeRefreshLayout.OnRefreshListener {
     @BindView(R.id.tv_type_grid)
     RecyclerView mRecyclerView;
+    @BindView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     private ShowsContract.Presenter mPresenter;
     private TVTypeAdapter mAdapter;
@@ -53,17 +56,20 @@ public class ShowsFragment extends Fragment implements ShowsContract.View {
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         mAdapter = new TVTypeAdapter();
         mRecyclerView.setAdapter(mAdapter);
+
+        mSwipeRefreshLayout.setOnRefreshListener(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mPresenter.start();
+        mPresenter.subscribe();
     }
 
     @Override
-    public void changeLoadingUI(boolean shown) {
-        // TODO: 2017/2/23
+    public void onPause() {
+        super.onPause();
+        mPresenter.unSubscribe();
     }
 
     @Override
@@ -77,6 +83,16 @@ public class ShowsFragment extends Fragment implements ShowsContract.View {
         Context context = getContext();
         if (context != null)
             Toast.makeText(context, reason, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void stopRefreshing() {
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onRefresh() {
+        mPresenter.refreshTVTypes();
     }
 
     class TVTypeAdapter extends RecyclerView.Adapter<TVTypeAdapter.ViewHolder> {

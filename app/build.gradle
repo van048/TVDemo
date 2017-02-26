@@ -27,10 +27,11 @@ dependencies {
     compile "com.google.guava:guava:$rootProject.ext.guavaVersion"
     compile "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofitVersion"
     compile "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofitVersion"
-    compile "com.squareup.retrofit2:adapter-rxjava:$rootProject.ext.retrofitVersion"
+    compile "com.squareup.retrofit2:adapter-rxjava2:$rootProject.ext.retrofitVersion"
     compile "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
     compile "io.reactivex.rxjava2:rxandroid:$rootProject.ext.rxjavaVersion"
     compile "io.reactivex.rxjava2:rxjava:$rootProject.ext.rxjavaVersion"
+    compile "com.github.akarnokd:rxjava2-interop:$rootProject.ext.interopVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.ext.butterknifeVersion"
 
     androidTestCompile("com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion", {

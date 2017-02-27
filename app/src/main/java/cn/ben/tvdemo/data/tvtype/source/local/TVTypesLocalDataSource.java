@@ -3,17 +3,25 @@ package cn.ben.tvdemo.data.tvtype.source.local;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
-import java.util.ArrayList;
+import com.squareup.sqlbrite.BriteDatabase;
+import com.squareup.sqlbrite.SqlBrite;
+
 import java.util.List;
 
 import cn.ben.tvdemo.data.tvtype.TVTypes;
 import cn.ben.tvdemo.data.tvtype.source.TVTypesDataSource;
+import cn.ben.tvdemo.data.tvtype.source.TVTypesRepository;
+import cn.ben.tvdemo.util.schedulers.BaseSchedulerProvider;
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import io.reactivex.Observable;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 import static cn.ben.tvdemo.data.tvtype.source.local.TVTypesPersistenceContract.TVTypeEntry.COLUMN_ID;
 import static cn.ben.tvdemo.data.tvtype.source.local.TVTypesPersistenceContract.TVTypeEntry.COLUMN_NAME;
@@ -21,73 +29,70 @@ import static cn.ben.tvdemo.data.tvtype.source.local.TVTypesPersistenceContract.
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class TVTypesLocalDataSource implements TVTypesDataSource {
+
+    @Nullable
     private volatile static TVTypesLocalDataSource instance = null;
-    private final TVTypesDbHelper mDbHelper;
 
+    @NonNull
+    private final BaseSchedulerProvider mSchedulerProvider;
+
+    @NonNull
+    private final BriteDatabase mDatabaseHelper;
+
+    @NonNull
     private final HandlerThread mDBThread;
-    private final Handler mDBHandler;
-    private final Handler mMainHandler;
 
-    public static TVTypesLocalDataSource getInstance(@NonNull Context context) {
+    @NonNull
+    private final Handler mDBHandler;
+
+    @NonNull
+    private final Func1<Cursor, TVTypes.TVType> mTVTypeMapperFunction = new Func1<Cursor, TVTypes.TVType>() {
+        @Override
+        public TVTypes.TVType call(Cursor cursor) {
+            String id = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ID));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME));
+            return new TVTypes.TVType(id, name);
+        }
+    };
+
+    public static TVTypesLocalDataSource getInstance(@NonNull Context context,
+                                                     @NonNull BaseSchedulerProvider schedulerProvider) {
         if (instance == null) {
             synchronized (TVTypesLocalDataSource.class) {
                 if (instance == null) {
-                    instance = new TVTypesLocalDataSource(context);
+                    instance = new TVTypesLocalDataSource(context, schedulerProvider);
                 }
             }
         }
         return instance;
     }
 
-    private TVTypesLocalDataSource(@NonNull Context context) {
+    private TVTypesLocalDataSource(@NonNull Context context,
+                                   @NonNull BaseSchedulerProvider schedulerProvider) {
         checkNotNull(context);
-        mDbHelper = new TVTypesDbHelper(context);
+        mSchedulerProvider = checkNotNull(schedulerProvider);
 
-        mDBThread = new HandlerThread(TVTypesLocalDataSource.class.getName());
+        TVTypesDbHelper dbHelper = new TVTypesDbHelper(context);
+        SqlBrite sqlBrite = new SqlBrite.Builder().build();
+        mDatabaseHelper = sqlBrite.wrapDatabaseHelper(dbHelper, mSchedulerProvider.io_1());
+
+        mDBThread = new HandlerThread(TVTypesRepository.class.getName());
         mDBThread.start();
         mDBHandler = new Handler(mDBThread.getLooper());
-        mMainHandler = new Handler(Looper.getMainLooper());
     }
 
     @Override
-    public void getTVTypes(@NonNull final LoadTVTypesCallback loadTVTypesCallback) {
-        mDBHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                final List<TVTypes.TVType> tvTypes = new ArrayList<>();
-                SQLiteDatabase sqLiteDatabase = mDbHelper.getReadableDatabase();
-
-                String[] projection = {
-                        COLUMN_ID,
-                        COLUMN_NAME
-                };
-
-                Cursor cursor = sqLiteDatabase.query(TABLE_NAME, projection, null, null, null, null, null);
-                if (cursor != null && cursor.getCount() > 0) {
-                    while (cursor.moveToNext()) {
-                        String id = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ID));
-                        String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME));
-                        TVTypes.TVType tvType = new TVTypes.TVType(id, name);
-                        tvTypes.add(tvType);
-                    }
-                }
-                if (cursor != null) {
-                    cursor.close();
-                }
-                sqLiteDatabase.close();
-
-                mMainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (tvTypes.isEmpty()) {
-                            loadTVTypesCallback.onDataNotAvailable("No Entries In Local DB");
-                        } else {
-                            loadTVTypesCallback.onTVTypesLoaded(tvTypes);
-                        }
-                    }
-                });
-            }
-        });
+    public Observable<List<TVTypes.TVType>> getTVTypes() {
+        String[] projection = {
+                COLUMN_ID,
+                COLUMN_NAME
+        };
+        String sql = String.format("SELECT %s FROM %s", TextUtils.join(",", projection), TABLE_NAME);
+        return RxJavaInterop.toV2Observable(
+                mDatabaseHelper
+                        .createQuery(TABLE_NAME, sql)
+                        .mapToList(mTVTypeMapperFunction)
+        );
     }
 
     @Override
@@ -95,9 +100,7 @@ public class TVTypesLocalDataSource implements TVTypesDataSource {
         mDBHandler.post(new Runnable() {
             @Override
             public void run() {
-                SQLiteDatabase sqLiteDatabase = mDbHelper.getWritableDatabase();
-                sqLiteDatabase.delete(TABLE_NAME, null, null);
-                sqLiteDatabase.close();
+                mDatabaseHelper.delete(TABLE_NAME, null);
             }
         });
     }
@@ -106,41 +109,31 @@ public class TVTypesLocalDataSource implements TVTypesDataSource {
     public void saveTVType(@NonNull final TVTypes.TVType tvType) {
         checkNotNull(tvType);
 
-        mDBHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                // make sure only each entry has unique ID
-                SQLiteDatabase sqLiteDatabase = mDbHelper.getReadableDatabase();
-                Cursor cursor = sqLiteDatabase.query(
-                        TABLE_NAME,
-                        new String[]{COLUMN_ID},
-                        COLUMN_ID + "=?",
-                        new String[]{tvType.getId()}, null, null, null);
-                if (cursor != null && cursor.getCount() > 1) {
-                    cursor.close();
-                    sqLiteDatabase.close();
-                    throw new AssertionError("Duplicated TV Type ID");
-                }
-                if (cursor != null) {
-                    cursor.close();
-                }
-                sqLiteDatabase.close();
-
-                sqLiteDatabase = mDbHelper.getWritableDatabase();
-                ContentValues contentValues = new ContentValues();
-                contentValues.put(COLUMN_ID, tvType.getId());
-                contentValues.put(COLUMN_NAME, tvType.getName());
-
-                sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
-                sqLiteDatabase.close();
-            }
-        });
+        // make sure only each entry has unique ID
+        String sql = String.format("SELECT * FROM %s WHERE %s=?", TABLE_NAME, COLUMN_ID);
+        mDatabaseHelper.
+                createQuery(TABLE_NAME, sql, tvType.getId())
+                .mapToList(mTVTypeMapperFunction)
+                .observeOn(mSchedulerProvider.io_1())
+                .subscribe(new Action1<List<TVTypes.TVType>>() {
+                    @Override
+                    public void call(List<TVTypes.TVType> tvTypes) {
+                        if (!tvTypes.isEmpty()) {
+                            throw new AssertionError("Duplicated TV Type ID");
+                        } else {
+                            ContentValues contentValues = new ContentValues();
+                            contentValues.put(COLUMN_ID, tvType.getId());
+                            contentValues.put(COLUMN_NAME, tvType.getName());
+                            mDatabaseHelper.insert(TABLE_NAME, contentValues);
+                        }
+                    }
+                });
     }
 
     @Override
     public void cleanup() {
         mDBThread.quitSafely();
-        mDbHelper.close();
+        mDatabaseHelper.close();
         instance = null;
     }
 }

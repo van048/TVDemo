@@ -1,14 +1,14 @@
 package cn.ben.tvdemo.data.tvtype.source.remote;
 
-import android.support.annotation.NonNull;
+import java.util.List;
 
 import cn.ben.tvdemo.constant.Constants;
 import cn.ben.tvdemo.data.tvtype.TVTypes;
 import cn.ben.tvdemo.data.tvtype.source.TVTypesDataSource;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.Observable;
+import io.reactivex.functions.Function;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -32,38 +32,23 @@ public class TVTypesRemoteDataSource implements TVTypesDataSource {
     }
 
     @Override
-    public void getTVTypes(@NonNull final LoadTVTypesCallback loadTVTypesCallback) {
+    public Observable<List<TVTypes.TVType>> getTVTypes() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(LOAD_TV_TYPES_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
         TVTypesService service = retrofit.create(TVTypesService.class);
-        Call<TVTypes> call = service.getTVTypes(Constants.API_KEY);
-        call.enqueue(new Callback<TVTypes>() {
-            @Override
-            public void onResponse(Call<TVTypes> call, Response<TVTypes> response) {
-                if (response.isSuccessful()) {
-                    TVTypes tvTypes = response.body();
-                    if (tvTypes != null) {
-                        int error_code = tvTypes.getError_code();
-                        if (error_code == 0) {
-                            loadTVTypesCallback.onTVTypesLoaded(tvTypes.getResult());
-                        } else {
-                            loadTVTypesCallback.onDataNotAvailable(tvTypes.getReason());
-                        }
-                    } else {
-                        loadTVTypesCallback.onDataNotAvailable("Response Error");
+        Observable<TVTypes> call = service.getTVTypes(Constants.API_KEY);
+        return call
+                .map(new Function<TVTypes, List<TVTypes.TVType>>() {
+                    @Override
+                    public List<TVTypes.TVType> apply(TVTypes tvTypes) throws Exception {
+                        if (tvTypes.getError_code() != 0)
+                            throw new Exception(tvTypes.getReason());
+                        return tvTypes.getResult();
                     }
-                } else {
-                    loadTVTypesCallback.onDataNotAvailable("Response Not Successful");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<TVTypes> call, Throwable t) {
-                loadTVTypesCallback.onDataNotAvailable(t.getLocalizedMessage());
-            }
-        });
+                });
     }
 
     @Override
@@ -81,6 +66,6 @@ public class TVTypesRemoteDataSource implements TVTypesDataSource {
 
     interface TVTypesService {
         @GET("Query")
-        Call<TVTypes> getTVTypes(@Query("key") String key);
+        Observable<TVTypes> getTVTypes(@Query("key") String key);
     }
 }

@@ -8,16 +8,27 @@ import java.util.List;
 import java.util.Map;
 
 import cn.ben.tvdemo.data.tvtype.TVTypes;
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Predicate;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class TVTypesRepository implements TVTypesDataSource {
     private volatile static TVTypesRepository instance = null;
+
     private final TVTypesDataSource mTVTypesRemoteDataSource;
     private final TVTypesDataSource mTVTypesLocalDataSource;
-
     private Map<String, TVTypes.TVType> mCachedTVTypes;
-    private boolean mCacheIsDirty = false;
+
+    private boolean mCacheIsDirty;
+    private final Predicate<List<TVTypes.TVType>> NON_EMPTY_PREDICATE = new Predicate<List<TVTypes.TVType>>() {
+        @Override
+        public boolean test(List<TVTypes.TVType> tvTypes) throws Exception {
+            return !tvTypes.isEmpty();
+        }
+    };
+    private final List<TVTypes.TVType> EMPTY_RETURNED_LIST = new ArrayList<>();
 
     private TVTypesRepository(@NonNull TVTypesDataSource tvTypesRemoteDataSource,
                               @NonNull TVTypesDataSource tvTypesLocalDataSource) {
@@ -42,30 +53,45 @@ public class TVTypesRepository implements TVTypesDataSource {
     }
 
     @Override
-    public void getTVTypes(@NonNull final LoadTVTypesCallback callback) {
-        checkNotNull(callback);
-
+    public Observable<List<TVTypes.TVType>> getTVTypes() {
         if (mCachedTVTypes != null && !mCacheIsDirty) {
-            callback.onTVTypesLoaded(new ArrayList<>(mCachedTVTypes.values()));
-            return;
+            List<TVTypes.TVType> mList = new ArrayList<>(mCachedTVTypes.values());
+            return Observable.just(mList);
         }
+
+        Observable<List<TVTypes.TVType>> remoteTVTypes = getAndSaveRemoteTVTypes();
 
         if (mCacheIsDirty) {
-            getTVTypesFromRemoteDataSource(callback);
+            return remoteTVTypes;
         } else {
-            mTVTypesLocalDataSource.getTVTypes(new LoadTVTypesCallback() {
-                @Override
-                public void onTVTypesLoaded(List<TVTypes.TVType> tvTypes) {
-                    refreshCache(tvTypes);
-                    callback.onTVTypesLoaded(new ArrayList<>(mCachedTVTypes.values()));
-                }
-
-                @Override
-                public void onDataNotAvailable(String reason) {
-                    getTVTypesFromRemoteDataSource(callback);
-                }
-            });
+            // mCachedTVTypes null, use local
+            // if error, use remote instead
+            return getAndCacheLocalTVTypes()
+                    .onErrorResumeNext(remoteTVTypes);
         }
+    }
+
+    private Observable<List<TVTypes.TVType>> getAndCacheLocalTVTypes() {
+        return mTVTypesLocalDataSource
+                .getTVTypes()
+                .doOnNext(new Consumer<List<TVTypes.TVType>>() {
+                    @Override
+                    public void accept(List<TVTypes.TVType> tvTypes) throws Exception {
+                        refreshCache(tvTypes);
+                    }
+                });
+    }
+
+    private Observable<List<TVTypes.TVType>> getAndSaveRemoteTVTypes() {
+        return mTVTypesRemoteDataSource
+                .getTVTypes()
+                .doOnNext(new Consumer<List<TVTypes.TVType>>() {
+                    @Override
+                    public void accept(List<TVTypes.TVType> tvTypes) throws Exception {
+                        refreshLocalDataSource(tvTypes);
+                        refreshCache(tvTypes);
+                    }
+                });
     }
 
     @Override
@@ -91,8 +117,6 @@ public class TVTypesRepository implements TVTypesDataSource {
 
     @Override
     public void cleanup() {
-        if (mCachedTVTypes != null)
-            mCachedTVTypes.clear();
         mTVTypesLocalDataSource.cleanup();
         mTVTypesRemoteDataSource.cleanup();
     }
@@ -106,22 +130,6 @@ public class TVTypesRepository implements TVTypesDataSource {
             mCachedTVTypes.put(tvType.getId(), tvType);
         }
         mCacheIsDirty = false;
-    }
-
-    private void getTVTypesFromRemoteDataSource(@NonNull final LoadTVTypesCallback callback) {
-        mTVTypesRemoteDataSource.getTVTypes(new LoadTVTypesCallback() {
-            @Override
-            public void onTVTypesLoaded(List<TVTypes.TVType> tvTypes) {
-                refreshLocalDataSource(tvTypes);
-                refreshCache(tvTypes);
-                callback.onTVTypesLoaded(new ArrayList<>(mCachedTVTypes.values()));
-            }
-
-            @Override
-            public void onDataNotAvailable(String reason) {
-                callback.onDataNotAvailable(reason);
-            }
-        });
     }
 
     private void refreshLocalDataSource(List<TVTypes.TVType> tvTypes) {

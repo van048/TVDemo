@@ -13,4 +13,7 @@ public interface BaseSchedulerProvider {
 
     @NonNull
     Scheduler ui();
+
+    @NonNull
+    rx.Scheduler io_1();
 }

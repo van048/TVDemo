@@ -14,7 +14,6 @@ public class SchedulerProvider implements BaseSchedulerProvider {
     private SchedulerProvider() {
     }
 
-    @Nullable
     public static SchedulerProvider getInstance() {
         if (instance == null) {
             synchronized (SchedulerProvider.class) {
@@ -42,5 +41,11 @@ public class SchedulerProvider implements BaseSchedulerProvider {
     @Override
     public Scheduler ui() {
         return AndroidSchedulers.mainThread();
+    }
+
+    @NonNull
+    @Override
+    public rx.Scheduler io_1() {
+        return rx.schedulers.Schedulers.io();
     }
 }

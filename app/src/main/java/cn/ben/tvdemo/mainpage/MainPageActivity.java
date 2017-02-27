@@ -38,7 +38,7 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
     @BindView(R.id.mToolbar)
     Toolbar mToolbar;
 
-    private int prevSelectedMenuItemPos = -1;
+    private int mPrevSelectedMenuItemPos = -1;
     private boolean mCreatedFromSavedInstance;
 
     private ShowsPresenter mShowsPresenter;
@@ -62,7 +62,6 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_page_act);
-
         ButterKnife.bind(this);
 
         setupToolbar();
@@ -74,19 +73,25 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
         setSupportActionBar(mToolbar);
     }
 
-    private void setupBottomNavigationView() {
-        mBottomNavigationView.setOnNavigationItemSelectedListener(this);
-    }
-
     private void setupViewPager() {
         MainPagePagerAdapter viewPagerAdapter = new MainPagePagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(viewPagerAdapter);
+        mViewPager.addOnPageChangeListener(this);
 
         // http://stackoverflow.com/questions/14035090/how-to-get-existing-fragments-when-using-fragmentpageradapter/41345283#41345283
         viewPagerAdapter.startUpdate(mViewPager);
 
         ShowsFragment showsFragment = (ShowsFragment) viewPagerAdapter.instantiateItem(mViewPager, SHOWS_FRAGMENT_POS);
-        mShowsPresenter = new ShowsPresenter(TVTypesRepository.getInstance(TVTypesRemoteDataSource.getInstance(), TVTypesLocalDataSource.getInstance(this)), showsFragment, SchedulerProvider.getInstance()); // TODO: 2017/2/19
+        mShowsPresenter = new ShowsPresenter(
+                TVTypesRepository.getInstance(
+                        TVTypesRemoteDataSource.getInstance(),
+                        TVTypesLocalDataSource.getInstance(
+                                this,
+                                SchedulerProvider.getInstance()
+                        )
+                ),
+                showsFragment,
+                SchedulerProvider.getInstance());
 
         FavoriteFragment favoriteFragment = (FavoriteFragment) viewPagerAdapter.instantiateItem(mViewPager, FAV_FRAGMENT_POS);
         mFavoritePresenter = new FavoritePresenter(favoriteFragment); // TODO: 2017/2/19
@@ -96,8 +101,10 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
 
         viewPagerAdapter.finishUpdate(mViewPager);
         // finish
+    }
 
-        mViewPager.addOnPageChangeListener(this);
+    private void setupBottomNavigationView() {
+        mBottomNavigationView.setOnNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -133,12 +140,12 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
 
     @Override
     public void onPageSelected(int position) {
-        if (position == prevSelectedMenuItemPos) return;
-        if (prevSelectedMenuItemPos >= 0 && prevSelectedMenuItemPos < mBottomNavigationView.getMenu().size())
-            mBottomNavigationView.getMenu().getItem(prevSelectedMenuItemPos).setChecked(false);
+        if (position == mPrevSelectedMenuItemPos) return;
+        if (mPrevSelectedMenuItemPos >= 0 && mPrevSelectedMenuItemPos < mBottomNavigationView.getMenu().size())
+            mBottomNavigationView.getMenu().getItem(mPrevSelectedMenuItemPos).setChecked(false);
         if (position >= 0 && position < mBottomNavigationView.getMenu().size())
             mBottomNavigationView.getMenu().getItem(position).setChecked(true);
-        prevSelectedMenuItemPos = position;
+        mPrevSelectedMenuItemPos = position;
     }
 
     @Override

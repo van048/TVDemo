@@ -76,8 +76,7 @@ public class ShowsPresenter implements ShowsContract.Presenter {
                 });
     }
 
-    @Override
-    public void loadTVTypes() {
+    private void loadTVTypes() {
         mDisposables.clear();
         mTVTypesRepository
                 .getTVTypes()

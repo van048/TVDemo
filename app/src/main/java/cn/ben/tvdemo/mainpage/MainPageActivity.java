@@ -29,6 +29,7 @@ import static cn.ben.tvdemo.mainpage.MainPageActivity.FragmentPosition.FAV_FRAGM
 import static cn.ben.tvdemo.mainpage.MainPageActivity.FragmentPosition.SETTINGS_FRAGMENT_POS;
 import static cn.ben.tvdemo.mainpage.MainPageActivity.FragmentPosition.SHOWS_FRAGMENT_POS;
 
+@SuppressWarnings("WeakerAccess")
 public class MainPageActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, ViewPager.OnPageChangeListener {
 
     @BindView(R.id.viewpager)
@@ -85,10 +86,7 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
         mShowsPresenter = new ShowsPresenter(
                 TVTypesRepository.getInstance(
                         TVTypesRemoteDataSource.getInstance(),
-                        TVTypesLocalDataSource.getInstance(
-                                this,
-                                SchedulerProvider.getInstance()
-                        )
+                        TVTypesLocalDataSource.getInstance(this)
                 ),
                 showsFragment,
                 SchedulerProvider.getInstance());

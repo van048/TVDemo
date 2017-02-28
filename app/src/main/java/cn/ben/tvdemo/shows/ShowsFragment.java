@@ -25,6 +25,7 @@ import cn.ben.tvdemo.data.tvtype.TVTypes;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@SuppressWarnings("WeakerAccess")
 public class ShowsFragment extends Fragment implements ShowsContract.View, SwipeRefreshLayout.OnRefreshListener {
     @BindView(R.id.tv_type_grid)
     RecyclerView mRecyclerView;
@@ -105,7 +106,7 @@ public class ShowsFragment extends Fragment implements ShowsContract.View, Swipe
     }
 
     class TVTypeAdapter extends RecyclerView.Adapter<TVTypeAdapter.ViewHolder> {
-        private List<TVTypes.TVType> mTVTypes;
+        private final List<TVTypes.TVType> mTVTypes;
 
         TVTypeAdapter() {
             mTVTypes = new ArrayList<>();

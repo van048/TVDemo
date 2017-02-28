@@ -18,7 +18,5 @@ class ShowsContract {
 
     interface Presenter extends BasePresenter {
         void refreshTVTypes();
-
-        void loadTVTypes();
     }
 }

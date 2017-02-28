@@ -11,7 +11,6 @@ import java.util.Map;
 import cn.ben.tvdemo.data.tvtype.TVTypes;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Predicate;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -23,13 +22,6 @@ public class TVTypesRepository implements TVTypesDataSource {
     private Map<String, TVTypes.TVType> mCachedTVTypes;
 
     private boolean mCacheIsDirty;
-    private final Predicate<List<TVTypes.TVType>> NON_EMPTY_PREDICATE = new Predicate<List<TVTypes.TVType>>() {
-        @Override
-        public boolean test(List<TVTypes.TVType> tvTypes) throws Exception {
-            return !tvTypes.isEmpty();
-        }
-    };
-    private final List<TVTypes.TVType> EMPTY_RETURNED_LIST = new ArrayList<>();
 
     private TVTypesRepository(@NonNull TVTypesDataSource tvTypesRemoteDataSource,
                               @NonNull TVTypesDataSource tvTypesLocalDataSource) {

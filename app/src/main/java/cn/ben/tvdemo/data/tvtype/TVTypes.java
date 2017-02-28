@@ -1,7 +1,12 @@
 package cn.ben.tvdemo.data.tvtype;
 
+import android.support.annotation.NonNull;
+
 import java.util.List;
 
+import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
+
+@SuppressWarnings("unused")
 public class TVTypes {
     private List<TVType> result;
 
@@ -60,7 +65,8 @@ public class TVTypes {
         }
 
         @Override
-        public int compareTo(TVType o) {
+        public int compareTo(@NonNull TVType o) {
+            checkNotNull(o);
             return Integer.valueOf(getId()).compareTo(Integer.valueOf(o.getId()));
         }
 

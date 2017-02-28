@@ -35,6 +35,4 @@ ext {
     retrofitVersion = '2.2.0'
     butterknifeVersion = '8.5.1'
     rxjavaVersion = '2.0.1'
-    interopVersion = '0.9.2'
-    sqlbriteVersion = '1.1.1'
 }

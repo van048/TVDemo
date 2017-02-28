@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -80,6 +81,8 @@ public class ShowsFragment extends Fragment implements ShowsContract.View, Swipe
 
     @Override
     public void showTVTypes(List<TVTypes.TVType> tvTypes) {
+        // make sure order here
+        Collections.sort(tvTypes);
         mAdapter.updateData(tvTypes);
     }
 

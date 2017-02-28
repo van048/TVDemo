@@ -70,7 +70,7 @@ public class TVTypesLocalDataSource implements TVTypesDataSource {
                                 COLUMN_NAME
                         };
 
-                        Cursor cursor = mReadableDatabase.query(TABLE_NAME, projection, null, null, null, null, COLUMN_ID + " ASC");
+                        Cursor cursor = mReadableDatabase.query(TABLE_NAME, projection, null, null, null, null, null);
                         if (cursor != null) {
                             while (cursor.moveToNext()) {
                                 String id = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ID));

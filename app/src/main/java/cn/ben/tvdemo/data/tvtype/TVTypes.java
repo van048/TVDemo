@@ -33,7 +33,7 @@ public class TVTypes {
         return this.reason;
     }
 
-    public static class TVType {
+    public static class TVType implements Comparable<TVType> {
         private String id;
 
         private String name;
@@ -57,6 +57,11 @@ public class TVTypes {
         public TVType(String i, String n) {
             id = i;
             name = n;
+        }
+
+        @Override
+        public int compareTo(TVType o) {
+            return Integer.valueOf(getId()).compareTo(Integer.valueOf(o.getId()));
         }
     }
 }

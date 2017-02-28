@@ -1,6 +1,7 @@
 package cn.ben.tvdemo.data.tvtype.source;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +57,12 @@ public class TVTypesRepository implements TVTypesDataSource {
     public Observable<List<TVTypes.TVType>> getTVTypes() {
         if (mCachedTVTypes != null && !mCacheIsDirty) {
             List<TVTypes.TVType> mList = new ArrayList<>(mCachedTVTypes.values());
-            return Observable.just(mList);
+            return Observable.just(mList).doOnNext(new Consumer<List<TVTypes.TVType>>() {
+                @Override
+                public void accept(List<TVTypes.TVType> tvTypes) throws Exception {
+                    Log.d("ben", "from cache");
+                }
+            });
         }
 
         Observable<List<TVTypes.TVType>> remoteTVTypes = getAndSaveRemoteTVTypes();
@@ -77,6 +83,7 @@ public class TVTypesRepository implements TVTypesDataSource {
                 .doOnNext(new Consumer<List<TVTypes.TVType>>() {
                     @Override
                     public void accept(List<TVTypes.TVType> tvTypes) throws Exception {
+                        Log.d("ben", "from local");
                         refreshCache(tvTypes);
                     }
                 });
@@ -88,6 +95,7 @@ public class TVTypesRepository implements TVTypesDataSource {
                 .doOnNext(new Consumer<List<TVTypes.TVType>>() {
                     @Override
                     public void accept(List<TVTypes.TVType> tvTypes) throws Exception {
+                        Log.d("ben", "from remote");
                         refreshLocalDataSource(tvTypes);
                         refreshCache(tvTypes);
                     }

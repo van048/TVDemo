@@ -13,12 +13,12 @@ public class SettingsPresenter implements SettingsContract.Presenter {
     }
 
     @Override
-    public void subscribe() {
+    public void onVisible() {
 
     }
 
     @Override
-    public void unSubscribe() {
+    public void onInvisible() {
 
     }
 }

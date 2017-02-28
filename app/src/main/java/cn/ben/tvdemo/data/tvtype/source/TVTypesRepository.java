@@ -91,6 +91,12 @@ public class TVTypesRepository implements TVTypesDataSource {
                         refreshLocalDataSource(tvTypes);
                         refreshCache(tvTypes);
                     }
+                })
+                .doOnError(new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        mCacheIsDirty = false;
+                    }
                 });
     }
 

@@ -11,12 +11,14 @@ class ShowsContract {
 
         void showTVTypes(List<TVTypes.TVType> tvTypes);
 
-        void showErrorUI(String reason);
+        void showTips(String reason);
 
         void stopRefreshing();
     }
 
     interface Presenter extends BasePresenter {
         void refreshTVTypes();
+
+        void loadTVTypes();
     }
 }

@@ -5,44 +5,119 @@ import android.support.annotation.NonNull;
 import java.util.List;
 
 import cn.ben.tvdemo.data.tvtype.TVTypes;
-import cn.ben.tvdemo.data.tvtype.source.TVTypesDataSource;
 import cn.ben.tvdemo.data.tvtype.source.TVTypesRepository;
+import cn.ben.tvdemo.util.schedulers.BaseSchedulerProvider;
+import io.reactivex.Observer;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ShowsPresenter implements ShowsContract.Presenter {
-    private final ShowsContract.View mShowsView;
-    private final TVTypesRepository mRepository;
 
-    public ShowsPresenter(@NonNull TVTypesRepository repository, @NonNull ShowsContract.View showsView, boolean refreshWhenInit) {
+    @NonNull
+    private final TVTypesRepository mTVTypesRepository;
+
+    @NonNull
+    private final ShowsContract.View mShowsView;
+
+    @NonNull
+    private final BaseSchedulerProvider mSchedulerProvider;
+
+    @NonNull
+    private final CompositeDisposable mDisposables;
+
+    public ShowsPresenter(@NonNull TVTypesRepository tvTypesRepository,
+                          @NonNull ShowsContract.View showsView,
+                          @NonNull BaseSchedulerProvider schedulerProvider) {
         mShowsView = checkNotNull(showsView);
-        mRepository = checkNotNull(repository);
+        mTVTypesRepository = checkNotNull(tvTypesRepository);
+        mSchedulerProvider = checkNotNull(schedulerProvider);
+
+        mDisposables = new CompositeDisposable();
 
         mShowsView.setPresenter(this);
-        if (refreshWhenInit) {
-            refreshTVTypes();
-        }
-    }
-
-    @Override
-    public void start() {
     }
 
     @Override
     public void refreshTVTypes() {
-        mShowsView.changeLoadingUI(true);
-        mRepository.getTVTypes(new TVTypesDataSource.LoadTVTypesCallback() {
-            @Override
-            public void onTVTypesLoaded(List<TVTypes.TVType> tvTypes) {
-                mShowsView.showTVTypes(tvTypes);
-                mShowsView.changeLoadingUI(false);
-            }
+        mDisposables.clear();
+        mTVTypesRepository.invalidCache();
+        mTVTypesRepository
+                .getTVTypes()
+                .subscribeOn(mSchedulerProvider.io())
+                .observeOn(mSchedulerProvider.ui())
+                .subscribe(new Observer<List<TVTypes.TVType>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        mDisposables.add(d);
+                    }
 
-            @Override
-            public void onDataNotAvailable(String reason) {
-                mShowsView.changeLoadingUI(false);
-                mShowsView.showErrorUI(reason);
-            }
-        });
+                    @Override
+                    public void onNext(List<TVTypes.TVType> value) {
+                        if (value.isEmpty()) {
+                            mShowsView.showTips("No TV Types Now");
+                        } else {
+                            mShowsView.showTVTypes(value);
+                            mShowsView.showTips("Refresh Done");
+                        }
+                        mShowsView.stopRefreshing();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mShowsView.showTips("Refresh Fail: " + e.getLocalizedMessage());
+                        mShowsView.stopRefreshing();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+                });
+    }
+
+    @Override
+    public void loadTVTypes() {
+        mDisposables.clear();
+        mTVTypesRepository
+                .getTVTypes()
+                .subscribeOn(mSchedulerProvider.io())
+                .observeOn(mSchedulerProvider.ui())
+                .subscribe(new Observer<List<TVTypes.TVType>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        mDisposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(List<TVTypes.TVType> value) {
+                        if (value.isEmpty()) {
+                            mShowsView.showTips("No TV Types Now");
+                        } else {
+                            mShowsView.showTVTypes(value);
+                            mShowsView.showTips("Load Done");
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mShowsView.showTips(e.getLocalizedMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+                });
+    }
+
+    @Override
+    public void onVisible() {
+        loadTVTypes();
+    }
+
+    @Override
+    public void onInvisible() {
+        mDisposables.clear();
+        mShowsView.stopRefreshing();
     }
 }

@@ -32,6 +32,7 @@ public class ShowsFragment extends Fragment implements ShowsContract.View, Swipe
 
     private ShowsContract.Presenter mPresenter;
     private TVTypeAdapter mAdapter;
+    private boolean mStarted = false;
 
     public static ShowsFragment newInstance() {
         return new ShowsFragment();
@@ -40,6 +41,7 @@ public class ShowsFragment extends Fragment implements ShowsContract.View, Swipe
     @Override
     public void setPresenter(@NonNull ShowsContract.Presenter presenter) {
         mPresenter = checkNotNull(presenter);
+        mAdapter = new TVTypeAdapter();
     }
 
     @Nullable
@@ -54,22 +56,26 @@ public class ShowsFragment extends Fragment implements ShowsContract.View, Swipe
         ButterKnife.bind(this, view);
 
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        mAdapter = new TVTypeAdapter();
         mRecyclerView.setAdapter(mAdapter);
 
         mSwipeRefreshLayout.setOnRefreshListener(this);
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mPresenter.subscribe();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mPresenter.unSubscribe();
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (mPresenter != null) {
+            if (getUserVisibleHint()) {
+                mStarted = true;
+                mPresenter.onVisible();
+            } else {
+                if (mStarted) {
+                    // actually leave this page
+                    mStarted = false;
+                    mPresenter.onInvisible();
+                }
+            }
+        }
     }
 
     @Override
@@ -78,7 +84,7 @@ public class ShowsFragment extends Fragment implements ShowsContract.View, Swipe
     }
 
     @Override
-    public void showErrorUI(String reason) {
+    public void showTips(String reason) {
         // TODO: 2017/2/23
         Context context = getContext();
         if (context != null)

@@ -14,6 +14,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class SettingsFragment extends Fragment implements SettingsContract.View {
     private SettingsContract.Presenter mPresenter;
+    private boolean mStarted = false;
 
     public static SettingsFragment newInstance() {
         return new SettingsFragment();
@@ -25,15 +26,20 @@ public class SettingsFragment extends Fragment implements SettingsContract.View 
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mPresenter.subscribe();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mPresenter.unSubscribe();
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (mPresenter != null) {
+            if (getUserVisibleHint()) {
+                mStarted = true;
+                mPresenter.onVisible();
+            } else {
+                if (mStarted) {
+                    // actually leave this page
+                    mStarted = false;
+                    mPresenter.onInvisible();
+                }
+            }
+        }
     }
 
     @Nullable

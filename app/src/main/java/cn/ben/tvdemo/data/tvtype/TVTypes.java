@@ -63,5 +63,10 @@ public class TVTypes {
         public int compareTo(TVType o) {
             return Integer.valueOf(getId()).compareTo(Integer.valueOf(o.getId()));
         }
+
+        @Override
+        public String toString() {
+            return getId() + " " + getName();
+        }
     }
 }

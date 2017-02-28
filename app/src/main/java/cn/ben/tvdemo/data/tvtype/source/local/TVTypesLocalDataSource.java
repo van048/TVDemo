@@ -70,10 +70,7 @@ public class TVTypesLocalDataSource implements TVTypesDataSource {
                                 COLUMN_NAME
                         };
 
-                        Cursor cursor;
-                        synchronized (mReadableDatabase) {
-                            cursor = mReadableDatabase.query(TABLE_NAME, projection, null, null, null, null, null);
-                        }
+                        Cursor cursor = mReadableDatabase.query(TABLE_NAME, projection, null, null, null, null, null);
                         if (cursor != null) {
                             while (cursor.moveToNext()) {
                                 String id = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_ID));
@@ -97,9 +94,7 @@ public class TVTypesLocalDataSource implements TVTypesDataSource {
                 .create(new ObservableOnSubscribe<Object>() {
                     @Override
                     public void subscribe(ObservableEmitter<Object> e) throws Exception {
-                        synchronized (mWritableDatabase) {
-                            mWritableDatabase.delete(TABLE_NAME, null, null);
-                        }
+                        mWritableDatabase.delete(TABLE_NAME, null, null);
                     }
                 })
                 .subscribeOn(mSchedulerProvider.io())
@@ -115,16 +110,14 @@ public class TVTypesLocalDataSource implements TVTypesDataSource {
                     @Override
                     public void subscribe(ObservableEmitter<Object> e) throws Exception {
                         // make sure only each entry has unique ID
-                        Cursor cursor;
-                        synchronized (mReadableDatabase) {
-                            cursor = mReadableDatabase.query(
-                                    TABLE_NAME,
-                                    new String[]{COLUMN_ID},
-                                    COLUMN_ID + "=?",
-                                    new String[]{tvType.getId()}, null, null, null);
-                        }
+                        Cursor cursor = mReadableDatabase.query(
+                                TABLE_NAME,
+                                new String[]{COLUMN_ID},
+                                COLUMN_ID + "=?",
+                                new String[]{tvType.getId()}, null, null, null);
                         if (cursor != null && cursor.getCount() > 1) {
                             cursor.close();
+                            mReadableDatabase.close();
                             throw new AssertionError("Duplicated TV Type ID");
                         }
                         if (cursor != null) {
@@ -134,9 +127,7 @@ public class TVTypesLocalDataSource implements TVTypesDataSource {
                         ContentValues contentValues = new ContentValues();
                         contentValues.put(COLUMN_ID, tvType.getId());
                         contentValues.put(COLUMN_NAME, tvType.getName());
-                        synchronized (mWritableDatabase) {
-                            mWritableDatabase.insert(TABLE_NAME, null, contentValues);
-                        }
+                        mWritableDatabase.insert(TABLE_NAME, null, contentValues);
                     }
                 })
                 .subscribeOn(mSchedulerProvider.io())

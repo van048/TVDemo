@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,13 +19,14 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.ben.tvdemo.BaseFragment;
 import cn.ben.tvdemo.R;
 import cn.ben.tvdemo.data.tvtype.TVTypes;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @SuppressWarnings("WeakerAccess")
-public class ShowsFragment extends Fragment implements ShowsContract.View, SwipeRefreshLayout.OnRefreshListener {
+public class ShowsFragment extends BaseFragment implements ShowsContract.View, SwipeRefreshLayout.OnRefreshListener {
     @BindView(R.id.tv_type_grid)
     RecyclerView mRecyclerView;
     @BindView(R.id.swipe_refresh_layout)
@@ -64,23 +64,6 @@ public class ShowsFragment extends Fragment implements ShowsContract.View, Swipe
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (mPresenter != null) {
-            if (getUserVisibleHint()) {
-                mStarted = true;
-                mPresenter.onVisible();
-            } else {
-                if (mStarted) {
-                    // actually leave this page
-                    mStarted = false;
-                    mPresenter.onInvisible();
-                }
-            }
-        }
-    }
-
-    @Override
     public void showTVTypes(List<TVTypes.TVType> tvTypes) {
         // make sure order here
         Collections.sort(tvTypes);
@@ -103,6 +86,15 @@ public class ShowsFragment extends Fragment implements ShowsContract.View, Swipe
     @Override
     public void onRefresh() {
         mPresenter.refreshTVTypes();
+    }
+
+    @Override
+    public void onVisibilityChangedToUser(boolean isVisibleToUser, boolean isHappenedInSetUserVisibleHintMethod) {
+        if (isVisibleToUser) {
+            mPresenter.onUserInvisible();
+        } else {
+            mPresenter.onUserInvisible();
+        }
     }
 
     class TVTypeAdapter extends RecyclerView.Adapter<TVTypeAdapter.ViewHolder> {

@@ -1,7 +1,7 @@
 package cn.ben.tvdemo;
 
 public interface BasePresenter {
-    void onVisible();
+    void onUserVisible();
 
-    void onInvisible();
+    void onUserInvisible();
 }

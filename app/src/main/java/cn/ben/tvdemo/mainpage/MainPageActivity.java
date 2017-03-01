@@ -42,10 +42,6 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
     private int mPrevSelectedMenuItemPos = -1;
     private boolean mCreatedFromSavedInstance;
 
-    private ShowsPresenter mShowsPresenter;
-    private FavoritePresenter mFavoritePresenter;
-    private SettingsPresenter mSettingsPresenter;
-
     enum FragmentPosition {
         SHOWS_FRAGMENT_POS,
         FAV_FRAGMENT_POS,
@@ -83,7 +79,7 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
         viewPagerAdapter.startUpdate(mViewPager);
 
         ShowsFragment showsFragment = (ShowsFragment) viewPagerAdapter.instantiateItem(mViewPager, SHOWS_FRAGMENT_POS);
-        mShowsPresenter = new ShowsPresenter(
+        new ShowsPresenter(
                 TVTypesRepository.getInstance(
                         TVTypesRemoteDataSource.getInstance(),
                         TVTypesLocalDataSource.getInstance(this)
@@ -92,10 +88,10 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
                 SchedulerProvider.getInstance());
 
         FavoriteFragment favoriteFragment = (FavoriteFragment) viewPagerAdapter.instantiateItem(mViewPager, FAV_FRAGMENT_POS);
-        mFavoritePresenter = new FavoritePresenter(favoriteFragment); // TODO: 2017/2/19
+        new FavoritePresenter(favoriteFragment);
 
         SettingsFragment settingsFragment = (SettingsFragment) viewPagerAdapter.instantiateItem(mViewPager, SETTINGS_FRAGMENT_POS);
-        mSettingsPresenter = new SettingsPresenter(settingsFragment); // TODO: 2017/2/19
+        new SettingsPresenter(settingsFragment);
 
         viewPagerAdapter.finishUpdate(mViewPager);
         // finish

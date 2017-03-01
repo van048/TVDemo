@@ -13,12 +13,12 @@ public class FavoritePresenter implements FavoriteContract.Presenter {
     }
 
     @Override
-    public void onVisible() {
+    public void onUserVisible() {
 
     }
 
     @Override
-    public void onInvisible() {
+    public void onUserInvisible() {
 
     }
 }

@@ -110,12 +110,12 @@ public class ShowsPresenter implements ShowsContract.Presenter {
     }
 
     @Override
-    public void onVisible() {
+    public void onUserVisible() {
         loadTVTypes();
     }
 
     @Override
-    public void onInvisible() {
+    public void onUserInvisible() {
         mDisposables.clear();
         mShowsView.stopRefreshing();
     }

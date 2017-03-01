@@ -91,7 +91,7 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
     @Override
     public void onVisibilityChangedToUser(boolean isVisibleToUser, boolean isHappenedInSetUserVisibleHintMethod) {
         if (isVisibleToUser) {
-            mPresenter.onUserInvisible();
+            mPresenter.onUserVisible();
         } else {
             mPresenter.onUserInvisible();
         }

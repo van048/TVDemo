@@ -35,7 +35,7 @@ public class SettingsFragment extends BaseFragment implements SettingsContract.V
     @Override
     public void onVisibilityChangedToUser(boolean isVisibleToUser, boolean isHappenedInSetUserVisibleHintMethod) {
         if (isVisibleToUser) {
-            mPresenter.onUserInvisible();
+            mPresenter.onUserVisible();
         } else {
             mPresenter.onUserInvisible();
         }

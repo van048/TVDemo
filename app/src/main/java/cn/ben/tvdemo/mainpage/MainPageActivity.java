@@ -91,7 +91,7 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
         new FavoritePresenter(favoriteFragment);
 
         SettingsFragment settingsFragment = (SettingsFragment) viewPagerAdapter.instantiateItem(mViewPager, SETTINGS_FRAGMENT_POS);
-        new SettingsPresenter(settingsFragment);
+        new SettingsPresenter(settingsFragment, this);
 
         viewPagerAdapter.finishUpdate(mViewPager);
         // finish

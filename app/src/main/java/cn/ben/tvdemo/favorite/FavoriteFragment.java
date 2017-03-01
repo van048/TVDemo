@@ -14,7 +14,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class FavoriteFragment extends BaseFragment implements FavoriteContract.View {
     private FavoriteContract.Presenter mPresenter;
-    private boolean mStarted = false;
 
     public static FavoriteFragment newInstance() {
         return new FavoriteFragment();
@@ -28,7 +27,6 @@ public class FavoriteFragment extends BaseFragment implements FavoriteContract.V
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // TODO: 2017/2/19
         return inflater.inflate(R.layout.fav_frag, container, false);
     }
 

@@ -34,7 +34,6 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
 
     private ShowsContract.Presenter mPresenter;
     private TVTypeAdapter mAdapter;
-    private boolean mStarted = false;
 
     public static ShowsFragment newInstance() {
         return new ShowsFragment();

@@ -40,8 +40,13 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
     }
 
     @Override
-    public void setPresenter(@NonNull ShowsContract.Presenter presenter) {
-        mPresenter = checkNotNull(presenter);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mPresenter = new ShowsPresenter(
+                Injection.provideTVTypesRepository(getContext()),
+                this,
+                Injection.provideSchedulerProvider());
         mAdapter = new TVTypeAdapter();
     }
 

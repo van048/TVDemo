@@ -9,7 +9,6 @@ public class FavoritePresenter implements FavoriteContract.Presenter {
 
     public FavoritePresenter(@NonNull FavoriteContract.View favoriteView) {
         mFavoriteView = checkNotNull(favoriteView);
-        mFavoriteView.setPresenter(this);
     }
 
     @Override

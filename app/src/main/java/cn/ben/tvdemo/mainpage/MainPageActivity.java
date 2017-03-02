@@ -15,14 +15,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnPageChange;
 import cn.ben.tvdemo.R;
-import cn.ben.tvdemo.data.Injection;
 import cn.ben.tvdemo.data.tvtype.source.TVTypesRepository;
 import cn.ben.tvdemo.mainpage.favorite.FavoriteFragment;
-import cn.ben.tvdemo.mainpage.favorite.FavoritePresenter;
 import cn.ben.tvdemo.mainpage.settings.SettingsFragment;
-import cn.ben.tvdemo.mainpage.settings.SettingsPresenter;
 import cn.ben.tvdemo.mainpage.shows.ShowsFragment;
-import cn.ben.tvdemo.mainpage.shows.ShowsPresenter;
 
 import static cn.ben.tvdemo.mainpage.MainPageActivity.FragmentPosition.FAV_FRAGMENT_POS;
 import static cn.ben.tvdemo.mainpage.MainPageActivity.FragmentPosition.SETTINGS_FRAGMENT_POS;
@@ -72,24 +68,6 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
     private void setupViewPager() {
         MainPagePagerAdapter viewPagerAdapter = new MainPagePagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(viewPagerAdapter);
-
-        // http://stackoverflow.com/questions/14035090/how-to-get-existing-fragments-when-using-fragmentpageradapter/41345283#41345283
-        viewPagerAdapter.startUpdate(mViewPager);
-
-        ShowsFragment showsFragment = (ShowsFragment) viewPagerAdapter.instantiateItem(mViewPager, SHOWS_FRAGMENT_POS);
-        new ShowsPresenter(
-                Injection.provideTVTypesRepository(getApplicationContext()),
-                showsFragment,
-                Injection.provideSchedulerProvider());
-
-        FavoriteFragment favoriteFragment = (FavoriteFragment) viewPagerAdapter.instantiateItem(mViewPager, FAV_FRAGMENT_POS);
-        new FavoritePresenter(favoriteFragment);
-
-        SettingsFragment settingsFragment = (SettingsFragment) viewPagerAdapter.instantiateItem(mViewPager, SETTINGS_FRAGMENT_POS);
-        new SettingsPresenter(settingsFragment, this);
-
-        viewPagerAdapter.finishUpdate(mViewPager);
-        // finish
     }
 
     private void setupBottomNavigationView() {

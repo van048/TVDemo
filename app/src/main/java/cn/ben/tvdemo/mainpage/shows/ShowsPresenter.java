@@ -35,8 +35,6 @@ public class ShowsPresenter implements ShowsContract.Presenter {
         mSchedulerProvider = checkNotNull(schedulerProvider);
 
         mDisposables = new CompositeDisposable();
-
-        mShowsView.setPresenter(this);
     }
 
     @Override

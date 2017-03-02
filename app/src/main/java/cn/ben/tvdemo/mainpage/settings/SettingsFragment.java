@@ -1,7 +1,6 @@
 package cn.ben.tvdemo.mainpage.settings;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
@@ -14,8 +13,6 @@ import butterknife.OnCheckedChanged;
 import cn.ben.tvdemo.BaseFragment;
 import cn.ben.tvdemo.R;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 public class SettingsFragment extends BaseFragment implements SettingsContract.View {
     @BindView(R.id.ringing_switch)
     SwitchCompat mSwitchCompat;
@@ -27,8 +24,9 @@ public class SettingsFragment extends BaseFragment implements SettingsContract.V
     }
 
     @Override
-    public void setPresenter(@NonNull SettingsContract.Presenter presenter) {
-        mPresenter = checkNotNull(presenter);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mPresenter = new SettingsPresenter(this, getContext());
     }
 
     @Nullable

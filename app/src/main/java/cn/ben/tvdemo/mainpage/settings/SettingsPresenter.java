@@ -18,8 +18,6 @@ public class SettingsPresenter implements SettingsContract.Presenter {
                              @NonNull Context context) {
         mSettingsView = checkNotNull(settingsView);
         mContext = checkNotNull(context);
-
-        mSettingsView.setPresenter(this);
     }
 
     @Override

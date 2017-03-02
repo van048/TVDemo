@@ -7,16 +7,16 @@ import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
 import cn.ben.tvdemo.BaseFragment;
 import cn.ben.tvdemo.R;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class SettingsFragment extends BaseFragment implements SettingsContract.View, CompoundButton.OnCheckedChangeListener {
+public class SettingsFragment extends BaseFragment implements SettingsContract.View {
     @BindView(R.id.ringing_switch)
     SwitchCompat mSwitchCompat;
 
@@ -41,8 +41,6 @@ public class SettingsFragment extends BaseFragment implements SettingsContract.V
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
-
-        mSwitchCompat.setOnCheckedChangeListener(this);
     }
 
     @Override
@@ -59,8 +57,8 @@ public class SettingsFragment extends BaseFragment implements SettingsContract.V
         mSwitchCompat.setChecked(remindEnabled);
     }
 
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        mPresenter.onRemindEnabledChanged(mSwitchCompat.isChecked());
+    @OnCheckedChanged(R.id.ringing_switch)
+    public void onCheckedChanged(boolean isChecked) {
+        mPresenter.onRemindEnabledChanged(isChecked);
     }
 }

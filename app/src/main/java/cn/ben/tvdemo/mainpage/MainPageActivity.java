@@ -13,6 +13,7 @@ import android.view.MenuItem;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnPageChange;
 import cn.ben.tvdemo.R;
 import cn.ben.tvdemo.data.tvtype.source.TVTypesRepository;
 import cn.ben.tvdemo.data.tvtype.source.local.TVTypesLocalDataSource;
@@ -30,7 +31,7 @@ import static cn.ben.tvdemo.mainpage.MainPageActivity.FragmentPosition.SETTINGS_
 import static cn.ben.tvdemo.mainpage.MainPageActivity.FragmentPosition.SHOWS_FRAGMENT_POS;
 
 @SuppressWarnings("WeakerAccess")
-public class MainPageActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, ViewPager.OnPageChangeListener {
+public class MainPageActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     @BindView(R.id.viewpager)
     ViewPager mViewPager;
@@ -73,7 +74,6 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
     private void setupViewPager() {
         MainPagePagerAdapter viewPagerAdapter = new MainPagePagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(viewPagerAdapter);
-        mViewPager.addOnPageChangeListener(this);
 
         // http://stackoverflow.com/questions/14035090/how-to-get-existing-fragments-when-using-fragmentpageradapter/41345283#41345283
         viewPagerAdapter.startUpdate(mViewPager);
@@ -128,11 +128,7 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
     // BottomNavigationView.OnNavigationItemSelectedListener end
 
     // ViewPager.OnPageChangeListener start
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-    }
-
-    @Override
+    @OnPageChange(value = R.id.viewpager, callback = OnPageChange.Callback.PAGE_SELECTED)
     public void onPageSelected(int position) {
         if (position == mPrevSelectedMenuItemPos) return;
         if (mPrevSelectedMenuItemPos >= 0 && mPrevSelectedMenuItemPos < mBottomNavigationView.getMenu().size())
@@ -140,11 +136,6 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
         if (position >= 0 && position < mBottomNavigationView.getMenu().size())
             mBottomNavigationView.getMenu().getItem(position).setChecked(true);
         mPrevSelectedMenuItemPos = position;
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
-
     }
     // ViewPager.OnPageChangeListener end
 

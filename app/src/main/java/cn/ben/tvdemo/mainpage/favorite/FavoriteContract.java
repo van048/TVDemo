@@ -1,4 +1,4 @@
-package cn.ben.tvdemo.favorite;
+package cn.ben.tvdemo.mainpage.favorite;
 
 import cn.ben.tvdemo.BasePresenter;
 import cn.ben.tvdemo.BaseView;

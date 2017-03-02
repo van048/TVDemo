@@ -15,16 +15,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnPageChange;
 import cn.ben.tvdemo.R;
+import cn.ben.tvdemo.data.Injection;
 import cn.ben.tvdemo.data.tvtype.source.TVTypesRepository;
-import cn.ben.tvdemo.data.tvtype.source.local.TVTypesLocalDataSource;
-import cn.ben.tvdemo.data.tvtype.source.remote.TVTypesRemoteDataSource;
-import cn.ben.tvdemo.favorite.FavoriteFragment;
-import cn.ben.tvdemo.favorite.FavoritePresenter;
-import cn.ben.tvdemo.settings.SettingsFragment;
-import cn.ben.tvdemo.settings.SettingsPresenter;
-import cn.ben.tvdemo.shows.ShowsFragment;
-import cn.ben.tvdemo.shows.ShowsPresenter;
-import cn.ben.tvdemo.util.schedulers.SchedulerProvider;
+import cn.ben.tvdemo.mainpage.favorite.FavoriteFragment;
+import cn.ben.tvdemo.mainpage.favorite.FavoritePresenter;
+import cn.ben.tvdemo.mainpage.settings.SettingsFragment;
+import cn.ben.tvdemo.mainpage.settings.SettingsPresenter;
+import cn.ben.tvdemo.mainpage.shows.ShowsFragment;
+import cn.ben.tvdemo.mainpage.shows.ShowsPresenter;
 
 import static cn.ben.tvdemo.mainpage.MainPageActivity.FragmentPosition.FAV_FRAGMENT_POS;
 import static cn.ben.tvdemo.mainpage.MainPageActivity.FragmentPosition.SETTINGS_FRAGMENT_POS;
@@ -80,12 +78,9 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
 
         ShowsFragment showsFragment = (ShowsFragment) viewPagerAdapter.instantiateItem(mViewPager, SHOWS_FRAGMENT_POS);
         new ShowsPresenter(
-                TVTypesRepository.getInstance(
-                        TVTypesRemoteDataSource.getInstance(),
-                        TVTypesLocalDataSource.getInstance(this)
-                ),
+                Injection.provideTVTypesRepository(getApplicationContext()),
                 showsFragment,
-                SchedulerProvider.getInstance());
+                Injection.provideSchedulerProvider());
 
         FavoriteFragment favoriteFragment = (FavoriteFragment) viewPagerAdapter.instantiateItem(mViewPager, FAV_FRAGMENT_POS);
         new FavoritePresenter(favoriteFragment);

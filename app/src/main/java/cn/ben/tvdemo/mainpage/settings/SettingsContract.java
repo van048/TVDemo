@@ -1,4 +1,4 @@
-package cn.ben.tvdemo.settings;
+package cn.ben.tvdemo.mainpage.settings;
 
 import cn.ben.tvdemo.BasePresenter;
 import cn.ben.tvdemo.BaseView;

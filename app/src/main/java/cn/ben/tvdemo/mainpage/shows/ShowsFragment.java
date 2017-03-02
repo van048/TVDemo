@@ -1,4 +1,4 @@
-package cn.ben.tvdemo.shows;
+package cn.ben.tvdemo.mainpage.shows;
 
 import android.content.Context;
 import android.os.Bundle;

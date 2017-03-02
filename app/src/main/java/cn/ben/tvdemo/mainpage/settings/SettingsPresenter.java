@@ -1,4 +1,4 @@
-package cn.ben.tvdemo.settings;
+package cn.ben.tvdemo.mainpage.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;

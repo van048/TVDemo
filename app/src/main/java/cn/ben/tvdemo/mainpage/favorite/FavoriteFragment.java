@@ -1,4 +1,4 @@
-package cn.ben.tvdemo.favorite;
+package cn.ben.tvdemo.mainpage.favorite;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

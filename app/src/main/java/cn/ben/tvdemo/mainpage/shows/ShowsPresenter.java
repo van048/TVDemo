@@ -92,7 +92,6 @@ public class ShowsPresenter implements ShowsContract.Presenter {
                             mShowsView.showTips("No TV Types Now");
                         } else {
                             mShowsView.showTVTypes(value);
-                            mShowsView.showTips("Load Done");
                         }
                     }
 

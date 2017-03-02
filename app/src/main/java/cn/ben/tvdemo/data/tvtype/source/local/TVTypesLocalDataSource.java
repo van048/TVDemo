@@ -1,7 +1,6 @@
 package cn.ben.tvdemo.data.tvtype.source.local;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
@@ -11,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import cn.ben.tvdemo.data.DBOpenHelper;
 import cn.ben.tvdemo.data.tvtype.TVTypes;
 import cn.ben.tvdemo.data.tvtype.source.TVTypesDataSource;
 import io.reactivex.Observable;
@@ -24,27 +24,25 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class TVTypesLocalDataSource implements TVTypesDataSource {
     private volatile static TVTypesLocalDataSource instance = null;
-    private final TVTypesDbHelper mDbHelper;
+    private final DBOpenHelper mDbHelper;
     private final Executor mExecutor;
 
     private final List<TVTypes.TVType> mGetResultTmp = new ArrayList<>();
     private volatile boolean mGetDone = false;
 
-    public static TVTypesLocalDataSource getInstance(@NonNull Context context) {
+    public static TVTypesLocalDataSource getInstance() {
         if (instance == null) {
             synchronized (TVTypesLocalDataSource.class) {
                 if (instance == null) {
-                    instance = new TVTypesLocalDataSource(context);
+                    instance = new TVTypesLocalDataSource();
                 }
             }
         }
         return instance;
     }
 
-    private TVTypesLocalDataSource(@NonNull Context context) {
-        checkNotNull(context);
-
-        mDbHelper = new TVTypesDbHelper(context);
+    private TVTypesLocalDataSource() {
+        mDbHelper = DBOpenHelper.getInstance();
         mExecutor = Executors.newSingleThreadExecutor();
     }
 

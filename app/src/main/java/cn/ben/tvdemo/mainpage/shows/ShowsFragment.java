@@ -45,7 +45,7 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
         super.onCreate(savedInstanceState);
 
         mPresenter = new ShowsPresenter(
-                Injection.provideTVTypesRepository(getContext()),
+                Injection.provideTVTypesRepository(),
                 this,
                 Injection.provideSchedulerProvider());
         mAdapter = new TVTypeAdapter();

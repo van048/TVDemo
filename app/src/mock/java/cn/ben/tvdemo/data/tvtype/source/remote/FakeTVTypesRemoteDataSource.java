@@ -55,7 +55,7 @@ public class FakeTVTypesRemoteDataSource implements TVTypesDataSource {
                 "        }\n" +
                 "    ],\n" +
                 "    \"error_code\": 0,\n" +
-                "    \"reason\": \"Succes\"\n" +
+                "    \"reason\": \"Success\"\n" +
                 "}", TVTypes.class);
         return Observable.just(tvTypes.getResult());
     }

@@ -29,7 +29,7 @@ public class FavoriteFragment extends BaseFragment implements FavoriteContract.V
     }
 
     @Override
-    public void onVisibilityChangedToUser(boolean isVisibleToUser, boolean isHappenedInSetUserVisibleHintMethod) {
+    public void onVisibilityChangedToUser(boolean isVisibleToUser) {
         if (isVisibleToUser) {
             mPresenter.onUserVisible();
         } else {

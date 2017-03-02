@@ -10,6 +10,7 @@ import static cn.ben.tvdemo.constant.Constants.*;
 import static cn.ben.tvdemo.data.tvtype.source.local.TVTypesPersistenceContract.TVTypeEntry.*;
 
 class TVTypesDbHelper extends SQLiteOpenHelper {
+    @SuppressWarnings("FieldCanBeLocal")
     private final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     _ID + DATABASE_TEXT_TYPE + " PRIMARY KEY," +

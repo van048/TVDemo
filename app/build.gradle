@@ -22,6 +22,7 @@ android {
         mock {
             applicationIdSuffix = ".mock"
         }
+        //noinspection GroovyMissingReturnStatement
         prod {
 
         }

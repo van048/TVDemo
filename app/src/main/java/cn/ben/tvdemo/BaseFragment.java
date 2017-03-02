@@ -9,7 +9,7 @@ public abstract class BaseFragment extends Fragment {
         super.onResume();
 
         if (getUserVisibleHint()) {
-            onVisibilityChangedToUser(true, false);
+            onVisibilityChangedToUser(true);
         }
     }
 
@@ -18,7 +18,7 @@ public abstract class BaseFragment extends Fragment {
         super.onPause();
 
         if (getUserVisibleHint()) {
-            onVisibilityChangedToUser(false, false);
+            onVisibilityChangedToUser(false);
         }
     }
 
@@ -27,9 +27,9 @@ public abstract class BaseFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
 
         if (isResumed()) {
-            onVisibilityChangedToUser(isVisibleToUser, true);
+            onVisibilityChangedToUser(isVisibleToUser);
         }
     }
 
-    public abstract void onVisibilityChangedToUser(boolean isVisibleToUser, boolean isHappenedInSetUserVisibleHintMethod);
+    protected abstract void onVisibilityChangedToUser(boolean isVisibleToUser);
 }

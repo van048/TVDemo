@@ -1,7 +1,5 @@
 package cn.ben.tvdemo.data.tvtype.source.remote;
 
-import com.google.gson.Gson;
-
 import java.util.List;
 
 import cn.ben.tvdemo.constant.Constants;
@@ -67,6 +65,7 @@ public class TVTypesRemoteDataSource implements TVTypesDataSource {
         instance = null;
     }
 
+    @SuppressWarnings("SameParameterValue")
     interface TVTypesService {
         @GET("Query")
         Observable<TVTypes> getTVTypes(@Query("key") String key);

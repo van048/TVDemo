@@ -1,8 +1,8 @@
 package cn.ben.tvdemo.mainpage.shows;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -21,9 +21,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.ben.tvdemo.BaseFragment;
 import cn.ben.tvdemo.R;
+import cn.ben.tvdemo.data.Injection;
 import cn.ben.tvdemo.data.tvtype.TVTypes;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import cn.ben.tvdemo.tvchannels.TVChannelsActivity;
+import cn.ben.tvdemo.tvchannels.TVChannelsFragment;
 
 @SuppressWarnings("WeakerAccess")
 public class ShowsFragment extends BaseFragment implements ShowsContract.View, SwipeRefreshLayout.OnRefreshListener {
@@ -76,7 +77,6 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
 
     @Override
     public void showTips(String reason) {
-        // TODO: 2017/2/23
         Context context = getContext();
         if (context != null)
             Toast.makeText(context, reason, Toast.LENGTH_SHORT).show();
@@ -93,7 +93,7 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
     }
 
     @Override
-    public void onVisibilityChangedToUser(boolean isVisibleToUser, boolean isHappenedInSetUserVisibleHintMethod) {
+    public void onVisibilityChangedToUser(boolean isVisibleToUser) {
         if (isVisibleToUser) {
             mPresenter.onUserVisible();
         } else {
@@ -101,7 +101,7 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
         }
     }
 
-    class TVTypeAdapter extends RecyclerView.Adapter<TVTypeAdapter.ViewHolder> {
+    class TVTypeAdapter extends RecyclerView.Adapter<TVTypeAdapter.ViewHolder> implements View.OnClickListener {
         private final List<TVTypes.TVType> mTVTypes;
 
         TVTypeAdapter() {
@@ -111,12 +111,14 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.tv_type_grid_item, parent, false);
+            itemView.setOnClickListener(this);
             return new ViewHolder(itemView);
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             holder.mTextView.setText(mTVTypes.get(position).getName());
+            holder.itemView.setTag(mTVTypes.get(position).getId());
         }
 
         @Override
@@ -130,6 +132,12 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
             notifyDataSetChanged();
         }
 
+        @Override
+        public void onClick(View v) {
+            String id = (String) v.getTag();
+            showTVChannels(id);
+        }
+
         class ViewHolder extends RecyclerView.ViewHolder {
             @BindView(R.id.tv_type_grid_item_title)
             TextView mTextView;
@@ -139,5 +147,11 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
                 ButterKnife.bind(this, itemView);
             }
         }
+    }
+
+    private void showTVChannels(String id) {
+        Intent intent = new Intent(getContext(), TVChannelsActivity.class);
+        intent.putExtra(TVChannelsFragment.ARGUMENT_TV_TYPE_ID, id);
+        startActivity(intent);
     }
 }

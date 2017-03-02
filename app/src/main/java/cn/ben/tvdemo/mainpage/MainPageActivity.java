@@ -134,9 +134,5 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
         public int getCount() {
             return FragmentPosition.values().length;
         }
-
-        Object instantiateItem(ViewPager container, MainPageActivity.FragmentPosition position) {
-            return instantiateItem(container, position.ordinal());
-        }
     }
 }

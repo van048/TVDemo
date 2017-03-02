@@ -3,4 +3,6 @@
     <string name="shows_title">Shows</string>
     <string name="favorite_title">Favorite</string>
     <string name="settings_title">Settings</string>
+    <string name="settings_ringing_title">提醒我</string>
+    <string name="settings_ringing_desc">当收藏的节目开始时发送通知</string>
 </resources>

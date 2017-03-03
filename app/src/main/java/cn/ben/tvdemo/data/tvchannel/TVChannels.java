@@ -2,6 +2,7 @@ package cn.ben.tvdemo.data.tvchannel;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class TVChannels {
     private List<TVChannel> result;
 
@@ -33,6 +34,7 @@ public class TVChannels {
         return this.reason;
     }
 
+    @SuppressWarnings("unused")
     public static class TVChannel {
         private String channelName;
 

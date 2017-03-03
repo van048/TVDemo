@@ -11,6 +11,7 @@ import java.util.Map;
 import cn.ben.tvdemo.data.tvtype.TVTypes;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Predicate;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -21,7 +22,13 @@ public class TVTypesRepository implements TVTypesDataSource {
     private final TVTypesDataSource mTVTypesLocalDataSource;
     private Map<String, TVTypes.TVType> mCachedTVTypes;
 
-    private boolean mCacheIsDirty;
+    private boolean mCacheIsDirty = true;
+    private final Predicate<List<TVTypes.TVType>> FILTER_EMPTY_LIST_PREDICATE = new Predicate<List<TVTypes.TVType>>() {
+        @Override
+        public boolean test(List<TVTypes.TVType> tvTypes) throws Exception {
+            return !tvTypes.isEmpty();
+        }
+    };
 
     private TVTypesRepository(@NonNull TVTypesDataSource tvTypesRemoteDataSource,
                               @NonNull TVTypesDataSource tvTypesLocalDataSource) {
@@ -48,13 +55,17 @@ public class TVTypesRepository implements TVTypesDataSource {
     @Override
     public Observable<List<TVTypes.TVType>> getTVTypes() {
         if (mCachedTVTypes != null && !mCacheIsDirty) {
+            // cache is valid, get it and return
             List<TVTypes.TVType> mList = new ArrayList<>(mCachedTVTypes.values());
-            return Observable.just(mList).doOnNext(new Consumer<List<TVTypes.TVType>>() {
-                @Override
-                public void accept(List<TVTypes.TVType> tvTypes) throws Exception {
-                    Log.d("ben", "from cache");
-                }
-            });
+            return Observable
+                    .just(mList)
+                    .filter(FILTER_EMPTY_LIST_PREDICATE)
+                    .doOnNext(new Consumer<List<TVTypes.TVType>>() {
+                        @Override
+                        public void accept(List<TVTypes.TVType> tvTypes) throws Exception {
+                            Log.d("ben", "from cache");
+                        }
+                    });
         }
 
         Observable<List<TVTypes.TVType>> remoteTVTypes = getAndSaveRemoteTVTypes();
@@ -62,16 +73,16 @@ public class TVTypesRepository implements TVTypesDataSource {
         if (mCacheIsDirty) {
             return remoteTVTypes;
         } else {
-            // mCachedTVTypes null, use local
-            // if error, use remote instead
+            // abnormal state
             return getAndCacheLocalTVTypes()
-                    .onErrorResumeNext(remoteTVTypes);
+                    .switchIfEmpty(remoteTVTypes);
         }
     }
 
     private Observable<List<TVTypes.TVType>> getAndCacheLocalTVTypes() {
         return mTVTypesLocalDataSource
                 .getTVTypes()
+                .filter(FILTER_EMPTY_LIST_PREDICATE)
                 .doOnNext(new Consumer<List<TVTypes.TVType>>() {
                     @Override
                     public void accept(List<TVTypes.TVType> tvTypes) throws Exception {
@@ -84,18 +95,13 @@ public class TVTypesRepository implements TVTypesDataSource {
     private Observable<List<TVTypes.TVType>> getAndSaveRemoteTVTypes() {
         return mTVTypesRemoteDataSource
                 .getTVTypes()
+                .filter(FILTER_EMPTY_LIST_PREDICATE)
                 .doOnNext(new Consumer<List<TVTypes.TVType>>() {
                     @Override
                     public void accept(List<TVTypes.TVType> tvTypes) throws Exception {
                         Log.d("ben", "from remote");
                         refreshLocalDataSource(tvTypes);
                         refreshCache(tvTypes);
-                    }
-                })
-                .doOnError(new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        mCacheIsDirty = false;
                     }
                 });
     }

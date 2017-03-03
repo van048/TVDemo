@@ -50,11 +50,7 @@ public class TVChannelsPresenter implements TVChannelsContract.Presenter {
 
                     @Override
                     public void onNext(List<TVChannels.TVChannel> value) {
-                        if (value.isEmpty()) {
-                            mTVChannelsView.showTips("No TV Channels");
-                        } else {
-                            mTVChannelsView.showTVChannels(value);
-                        }
+                        mTVChannelsView.showTVChannels(value);
                     }
 
                     @Override
@@ -72,5 +68,39 @@ public class TVChannelsPresenter implements TVChannelsContract.Presenter {
     public void onUserInvisible() {
         mDisposables.clear();
         mTVChannelsView.stopRefreshing();
+    }
+
+    @Override
+    public void refreshTVChannels() {
+        mDisposables.clear();
+        mTVChannelsRepository.invalidCache(mTVTypeId);
+        mTVChannelsRepository
+                .getTVChannelsWithPID(mTVTypeId)
+                .subscribeOn(mSchedulerProvider.io())
+                .observeOn(mSchedulerProvider.ui())
+                .subscribe(new Observer<List<TVChannels.TVChannel>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        mDisposables.add(d);
+                    }
+
+                    @Override
+                    public void onNext(List<TVChannels.TVChannel> value) {
+                        mTVChannelsView.showTVChannels(value);
+                        mTVChannelsView.showTips("Refresh Done");
+                        mTVChannelsView.stopRefreshing();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mTVChannelsView.showTips("Refresh Failed: " + e.getMessage());
+                        mTVChannelsView.stopRefreshing();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        mTVChannelsView.stopRefreshing();
+                    }
+                });
     }
 }

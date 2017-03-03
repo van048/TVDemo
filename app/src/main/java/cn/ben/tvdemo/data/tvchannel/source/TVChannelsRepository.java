@@ -11,6 +11,7 @@ import java.util.Map;
 import cn.ben.tvdemo.data.tvchannel.TVChannels;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Predicate;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -21,7 +22,13 @@ public class TVChannelsRepository implements TVChannelsDataSource {
     private final TVChannelsDataSource mTVChannelsLocalDataSource;
     private Map<String, List<TVChannels.TVChannel>> mCachedTVChannels;
 
-    private boolean mCacheIsDirty;
+    private Map<String, Boolean> mCacheIsDirtyMap;
+    private final Predicate<List<TVChannels.TVChannel>> FILTER_EMPTY_LIST_PREDICATE = new Predicate<List<TVChannels.TVChannel>>() {
+        @Override
+        public boolean test(List<TVChannels.TVChannel> tvChannels) throws Exception {
+            return !tvChannels.isEmpty();
+        }
+    };
 
     private TVChannelsRepository(@NonNull TVChannelsDataSource tvChannelsRemoteDataSource,
                                  @NonNull TVChannelsDataSource tvChannelsLocalDataSource) {
@@ -47,36 +54,46 @@ public class TVChannelsRepository implements TVChannelsDataSource {
 
     @Override
     public Observable<List<TVChannels.TVChannel>> getTVChannelsWithPID(String pId) {
-        if (mCachedTVChannels != null && !mCacheIsDirty) {
-            List<TVChannels.TVChannel> mList = mCachedTVChannels.get(pId);
-            if (mList == null) {
-                mList = new ArrayList<>();
-            }
-            mCachedTVChannels.put(pId, mList);
-
-            return Observable.just(mList).doOnNext(new Consumer<List<TVChannels.TVChannel>>() {
-                @Override
-                public void accept(List<TVChannels.TVChannel> tvChannels) throws Exception {
-                    Log.d("ben", "from cache");
-                }
-            });
+        Observable<List<TVChannels.TVChannel>> remoteTVChannels = getAndSaveRemoteTVChannels(pId);
+        Observable<List<TVChannels.TVChannel>> localTVChannels = getAndCacheLocalTVChannels(pId);
+        if (mCacheIsDirtyMap == null) {
+            // all dirty
+            return remoteTVChannels;
+        }
+        Boolean isCacheDirtyWithPID = mCacheIsDirtyMap.get(pId);
+        if (isCacheDirtyWithPID == null || isCacheDirtyWithPID.equals(true)) {
+            return remoteTVChannels;
+        }
+        // now it says the cache is valid, so check the cache itself
+        if (mCachedTVChannels == null) {
+            // abnormal state
+            return localTVChannels
+                    .switchIfEmpty(remoteTVChannels);
         }
 
-        Observable<List<TVChannels.TVChannel>> remoteTVTypes = getAndSaveRemoteTVChannels(pId);
-
-        if (mCacheIsDirty) {
-            return remoteTVTypes;
+        // try get the cache now
+        List<TVChannels.TVChannel> mList = mCachedTVChannels.get(pId);
+        if (mList != null) {
+            return Observable
+                    .just(mList)
+                    .filter(FILTER_EMPTY_LIST_PREDICATE)
+                    .doOnNext(new Consumer<List<TVChannels.TVChannel>>() {
+                        @Override
+                        public void accept(List<TVChannels.TVChannel> tvChannels) throws Exception {
+                            Log.d("ben", "from cache");
+                        }
+                    });
         } else {
-            // mCachedTVChannels null, use local
-            // if error, use remote instead
-            return getAndCacheLocalTVChannels(pId)
-                    .onErrorResumeNext(remoteTVTypes);
+            // abnormal state
+            return localTVChannels
+                    .switchIfEmpty(remoteTVChannels);
         }
     }
 
     private Observable<List<TVChannels.TVChannel>> getAndCacheLocalTVChannels(final String pId) {
         return mTVChannelsLocalDataSource
                 .getTVChannelsWithPID(pId)
+                .filter(FILTER_EMPTY_LIST_PREDICATE)
                 .doOnNext(new Consumer<List<TVChannels.TVChannel>>() {
                     @Override
                     public void accept(List<TVChannels.TVChannel> tvChannels) throws Exception {
@@ -89,18 +106,13 @@ public class TVChannelsRepository implements TVChannelsDataSource {
     private Observable<List<TVChannels.TVChannel>> getAndSaveRemoteTVChannels(final String pId) {
         return mTVChannelsRemoteDataSource
                 .getTVChannelsWithPID(pId)
+                .filter(FILTER_EMPTY_LIST_PREDICATE)
                 .doOnNext(new Consumer<List<TVChannels.TVChannel>>() {
                     @Override
                     public void accept(List<TVChannels.TVChannel> tvChannels) throws Exception {
                         Log.d("ben", "from remote");
                         refreshLocalDataSourceWithPID(pId, tvChannels);
                         refreshCacheWithPID(pId, tvChannels);
-                    }
-                })
-                .doOnError(new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        mCacheIsDirty = false;
                     }
                 });
     }
@@ -143,7 +155,10 @@ public class TVChannelsRepository implements TVChannelsDataSource {
         }
         mCachedTVChannels.remove(pId);
         mCachedTVChannels.put(pId, tvChannels);
-        mCacheIsDirty = false;
+
+        // record cache is valid
+        if (mCacheIsDirtyMap == null) mCacheIsDirtyMap = new HashMap<>();
+        mCacheIsDirtyMap.put(pId, false);
     }
 
     private void refreshLocalDataSourceWithPID(String pId, List<TVChannels.TVChannel> tvChannels) {
@@ -153,7 +168,8 @@ public class TVChannelsRepository implements TVChannelsDataSource {
         }
     }
 
-    public void invalidCache() {
-        mCacheIsDirty = true;
+    public void invalidCache(String pId) {
+        if (mCacheIsDirtyMap == null) mCacheIsDirtyMap = new HashMap<>();
+        mCacheIsDirtyMap.put(pId, true);
     }
 }

@@ -16,5 +16,6 @@ class TVChannelsContract {
     }
 
     interface Presenter extends BasePresenter {
+        void refreshTVChannels();
     }
 }

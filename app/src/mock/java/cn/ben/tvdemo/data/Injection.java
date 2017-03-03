@@ -1,7 +1,5 @@
 package cn.ben.tvdemo.data;
 
-import android.content.Context;
-
 import cn.ben.tvdemo.data.tvchannel.source.TVChannelsRepository;
 import cn.ben.tvdemo.data.tvchannel.source.local.TVChannelsLocalDataSource;
 import cn.ben.tvdemo.data.tvchannel.source.remote.FakeTVChannelsRemoteDataSource;
@@ -23,7 +21,7 @@ public class Injection {
         return SchedulerProvider.getInstance();
     }
 
-    public static TVChannelsRepository provideTVChannelsRepository(Context context) {
+    public static TVChannelsRepository provideTVChannelsRepository() {
         return TVChannelsRepository.getInstance(
                 FakeTVChannelsRemoteDataSource.getInstance(),
                 TVChannelsLocalDataSource.getInstance()

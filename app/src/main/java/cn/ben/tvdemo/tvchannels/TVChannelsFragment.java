@@ -46,7 +46,7 @@ public class TVChannelsFragment extends BaseFragment implements TVChannelsContra
         super.onCreate(savedInstanceState);
         mPresenter = new TVChannelsPresenter(
                 getArguments().getString(ARGUMENT_TV_TYPE_ID, ""),
-                Injection.provideTVChannelsRepository(getContext().getApplicationContext()),
+                Injection.provideTVChannelsRepository(),
                 this,
                 Injection.provideSchedulerProvider()
         );
@@ -81,7 +81,7 @@ public class TVChannelsFragment extends BaseFragment implements TVChannelsContra
 
     @Override
     public void onRefresh() {
-
+        mPresenter.refreshTVChannels();
     }
 
     @Override
@@ -99,7 +99,7 @@ public class TVChannelsFragment extends BaseFragment implements TVChannelsContra
 
     @Override
     public void stopRefreshing() {
-
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     public class TVChannelsAdapter extends RecyclerView.Adapter<TVChannelsAdapter.ViewHolder> {

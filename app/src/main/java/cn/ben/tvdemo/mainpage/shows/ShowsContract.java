@@ -14,6 +14,10 @@ class ShowsContract {
         void showTips(String reason);
 
         void stopRefreshing();
+
+        void showLoadingUI();
+
+        void stopLoadingUI();
     }
 
     interface Presenter extends BasePresenter {

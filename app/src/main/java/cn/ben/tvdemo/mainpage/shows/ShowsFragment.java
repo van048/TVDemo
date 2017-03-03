@@ -32,6 +32,8 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
     RecyclerView mRecyclerView;
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.tv_type_loading)
+    TextView mLoadingView;
 
     private ShowsContract.Presenter mPresenter;
     private TVTypeAdapter mAdapter;
@@ -85,6 +87,17 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
     @Override
     public void stopRefreshing() {
         mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void showLoadingUI() {
+        if (mAdapter.getItemCount() <= 0)
+            mLoadingView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void stopLoadingUI() {
+        mLoadingView.setVisibility(View.GONE);
     }
 
     @Override

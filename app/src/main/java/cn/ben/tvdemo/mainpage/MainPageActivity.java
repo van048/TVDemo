@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -15,6 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnPageChange;
 import cn.ben.tvdemo.R;
+import cn.ben.tvdemo.data.tvchannel.source.TVChannelsRepository;
 import cn.ben.tvdemo.data.tvtype.source.TVTypesRepository;
 import cn.ben.tvdemo.mainpage.favorite.FavoriteFragment;
 import cn.ben.tvdemo.mainpage.settings.SettingsFragment;
@@ -63,6 +65,11 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
 
     private void setupToolbar() {
         setSupportActionBar(mToolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeAsUpIndicator(R.mipmap.ic_launcher);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void setupViewPager() {
@@ -78,6 +85,7 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
     protected void onDestroy() {
         super.onDestroy();
         TVTypesRepository.destroyInstance();
+        TVChannelsRepository.destroyInstance();
     }
 
     // BottomNavigationView.OnNavigationItemSelectedListener start

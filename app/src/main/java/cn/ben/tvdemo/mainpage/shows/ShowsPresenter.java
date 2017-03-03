@@ -53,23 +53,20 @@ public class ShowsPresenter implements ShowsContract.Presenter {
 
                     @Override
                     public void onNext(List<TVTypes.TVType> value) {
-                        if (value.isEmpty()) {
-                            mShowsView.showTips("No TV Types Now");
-                        } else {
-                            mShowsView.showTVTypes(value);
-                            mShowsView.showTips("Refresh Done");
-                        }
+                        mShowsView.showTVTypes(value);
+                        mShowsView.showTips("Refresh Done");
                         mShowsView.stopRefreshing();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mShowsView.showTips("Refresh Fail: " + e.getLocalizedMessage());
+                        mShowsView.showTips("Refresh Failed: " + e.getLocalizedMessage());
                         mShowsView.stopRefreshing();
                     }
 
                     @Override
                     public void onComplete() {
+                        mShowsView.stopRefreshing();
                     }
                 });
     }
@@ -88,26 +85,26 @@ public class ShowsPresenter implements ShowsContract.Presenter {
 
                     @Override
                     public void onNext(List<TVTypes.TVType> value) {
-                        if (value.isEmpty()) {
-                            mShowsView.showTips("No TV Types Now");
-                        } else {
-                            mShowsView.showTVTypes(value);
-                        }
+                        mShowsView.showTVTypes(value);
+                        mShowsView.stopLoadingUI();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mShowsView.showTips(e.getLocalizedMessage());
+                        mShowsView.showTips("Load Failed: " + e.getLocalizedMessage());
+                        mShowsView.stopLoadingUI();
                     }
 
                     @Override
                     public void onComplete() {
+                        mShowsView.stopLoadingUI();
                     }
                 });
     }
 
     @Override
     public void onUserVisible() {
+        mShowsView.showLoadingUI();
         loadTVTypes();
     }
 

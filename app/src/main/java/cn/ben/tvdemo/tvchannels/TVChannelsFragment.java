@@ -8,7 +8,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,10 +72,6 @@ public class TVChannelsFragment extends BaseFragment implements TVChannelsContra
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
 
-        // increase the distance to avoid incorrect operation
-        final DisplayMetrics metrics = getResources().getDisplayMetrics();
-        int spinnerOffsetEnd = (int) (64 * metrics.density);
-        mSwipeRefreshLayout.setDistanceToTriggerSync(spinnerOffsetEnd * 4);
         mSwipeRefreshLayout.setOnRefreshListener(this);
     }
 

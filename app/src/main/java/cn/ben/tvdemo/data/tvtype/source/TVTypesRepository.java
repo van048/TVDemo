@@ -48,8 +48,10 @@ public class TVTypesRepository implements TVTypesDataSource {
     }
 
     public static void destroyInstance() {
-        instance.cleanup();
-        instance = null;
+        if (instance != null) {
+            instance.cleanup();
+            instance = null;
+        }
     }
 
     @Override

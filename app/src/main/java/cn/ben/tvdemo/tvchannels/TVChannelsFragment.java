@@ -127,7 +127,7 @@ public class TVChannelsFragment extends BaseFragment implements TVChannelsContra
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             holder.mTextView.setText(mChannelList.get(position).getChannelName());
-            holder.itemView.setTag(mChannelList.get(position).getRel());
+            holder.itemView.setTag(mChannelList.get(position));
         }
 
         @Override
@@ -143,8 +143,8 @@ public class TVChannelsFragment extends BaseFragment implements TVChannelsContra
 
         @Override
         public void onClick(View v) {
-            String code = (String) v.getTag();
-            showTVShows(code);
+            TVChannels.TVChannel tvChannel = (TVChannels.TVChannel) v.getTag();
+            showTVShows(tvChannel.getPId(), tvChannel.getChannelName());
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
@@ -158,9 +158,10 @@ public class TVChannelsFragment extends BaseFragment implements TVChannelsContra
         }
     }
 
-    private void showTVShows(String code) {
+    private void showTVShows(String code, String name) {
         Intent intent = new Intent(getContext(), TVShowsActivity.class);
         intent.putExtra(TVShowsFragment.ARGUMENT_CHANNEL_CODE_KEY, code);
+        intent.putExtra(TVShowsFragment.ARGUMENT_CHANNEL_NAME_KEY, name);
         startActivity(intent);
     }
 }

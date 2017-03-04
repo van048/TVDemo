@@ -20,6 +20,8 @@
         </activity>
         <activity android:name=".tvchannels.TVChannelsActivity">
         </activity>
+        <activity android:name=".tvshows.TVShowsActivity">
+        </activity>
     </application>
 
 </manifest>

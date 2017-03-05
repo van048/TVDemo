@@ -3,6 +3,10 @@ package cn.ben.tvdemo.data;
 import cn.ben.tvdemo.data.tvchannel.source.TVChannelsRepository;
 import cn.ben.tvdemo.data.tvchannel.source.local.TVChannelsLocalDataSource;
 import cn.ben.tvdemo.data.tvchannel.source.remote.FakeTVChannelsRemoteDataSource;
+import cn.ben.tvdemo.data.tvshow.source.TVShowsRepository;
+import cn.ben.tvdemo.data.tvshow.source.local.TVShowsLocalDataSource;
+import cn.ben.tvdemo.data.tvshow.source.remote.FakeTVShowsRemoteDataSource;
+import cn.ben.tvdemo.data.tvshow.source.remote.TVShowsRemoteDataSource;
 import cn.ben.tvdemo.data.tvtype.source.TVTypesRepository;
 import cn.ben.tvdemo.data.tvtype.source.local.TVTypesLocalDataSource;
 import cn.ben.tvdemo.data.tvtype.source.remote.FakeTVTypesRemoteDataSource;
@@ -25,6 +29,13 @@ public class Injection {
         return TVChannelsRepository.getInstance(
                 FakeTVChannelsRemoteDataSource.getInstance(),
                 TVChannelsLocalDataSource.getInstance()
+        );
+    }
+
+    public static TVShowsRepository provideTVShowsRepository() {
+        return TVShowsRepository.getInstance(
+                FakeTVShowsRemoteDataSource.getInstance(),
+                TVShowsLocalDataSource.getInstance()
         );
     }
 }

@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import java.util.Calendar;
@@ -30,8 +31,8 @@ public class TVShowsActivity extends AppCompatActivity {
     private final String[] DAY_NAME = {"", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
     private int mCurrentDay;
     private DailyShowsAdapter mAdapter;
-    private String mCode;
-    private String mName;
+    private String mChannelCode;
+    private String mChannelName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +40,9 @@ public class TVShowsActivity extends AppCompatActivity {
         setContentView(R.layout.tvshows_act);
         ButterKnife.bind(this);
 
-        mCode = getIntent().getStringExtra(TVShowsFragment.ARGUMENT_CHANNEL_CODE_KEY);
-        mName = getIntent().getStringExtra(TVShowsFragment.ARGUMENT_CHANNEL_NAME_KEY);
+        mChannelCode = getIntent().getStringExtra(TVShowsFragment.ARGUMENT_CHANNEL_CODE_KEY);
+        mChannelName = getIntent().getStringExtra(TVShowsFragment.ARGUMENT_CHANNEL_NAME_KEY);
+        Log.d("ben", "channel code: " + mChannelCode);
 
         setupActionBar();
         setupTabLayout();
@@ -76,7 +78,7 @@ public class TVShowsActivity extends AppCompatActivity {
         ActionBar actionbar = getSupportActionBar();
         if (actionbar != null) {
             actionbar.setDisplayHomeAsUpEnabled(true);
-            actionbar.setTitle(mName);
+            actionbar.setTitle(mChannelName);
         }
     }
 
@@ -99,7 +101,7 @@ public class TVShowsActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return TVShowsFragment.newInstance(mCode, position);
+            return TVShowsFragment.newInstance(mChannelCode, position);
         }
 
         @Override

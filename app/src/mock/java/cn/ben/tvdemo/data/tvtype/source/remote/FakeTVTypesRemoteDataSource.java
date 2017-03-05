@@ -3,10 +3,12 @@ package cn.ben.tvdemo.data.tvtype.source.remote;
 import com.google.gson.Gson;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import cn.ben.tvdemo.data.tvtype.TVTypes;
 import cn.ben.tvdemo.data.tvtype.source.TVTypesDataSource;
 import io.reactivex.Observable;
+import io.reactivex.functions.Function;
 
 public class FakeTVTypesRemoteDataSource implements TVTypesDataSource {
     private volatile static FakeTVTypesRemoteDataSource instance = null;
@@ -27,7 +29,7 @@ public class FakeTVTypesRemoteDataSource implements TVTypesDataSource {
 
     @Override
     public Observable<List<TVTypes.TVType>> getTVTypes() {
-        TVTypes tvTypes = new Gson().fromJson("{\n" +
+        final TVTypes tvTypes = new Gson().fromJson("{\n" +
                 "    \"result\": [\n" +
                 "        {\n" +
                 "            \"id\": \"1\",\n" +
@@ -57,7 +59,14 @@ public class FakeTVTypesRemoteDataSource implements TVTypesDataSource {
                 "    \"error_code\": 0,\n" +
                 "    \"reason\": \"Success\"\n" +
                 "}", TVTypes.class);
-        return Observable.just(tvTypes.getResult());
+        return Observable
+                .timer(5, TimeUnit.SECONDS)
+                .map(new Function<Long, List<TVTypes.TVType>>() {
+                    @Override
+                    public List<TVTypes.TVType> apply(Long aLong) throws Exception {
+                        return tvTypes.getResult();
+                    }
+                });
     }
 
     @Override

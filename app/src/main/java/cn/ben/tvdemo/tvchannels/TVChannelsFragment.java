@@ -33,6 +33,8 @@ public class TVChannelsFragment extends BaseFragment implements TVChannelsContra
     RecyclerView mRecyclerView;
     @BindView(R.id.channels_swipe_refresh)
     SwipeRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.channels_loading)
+    TextView mLoadingTextView;
 
     private TVChannelsAdapter mAdapter;
     private TVChannelsContract.Presenter mPresenter;
@@ -105,6 +107,17 @@ public class TVChannelsFragment extends BaseFragment implements TVChannelsContra
     @Override
     public void stopRefreshing() {
         mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void showLoadingUI() {
+        if (mAdapter.getItemCount() <= 0)
+            mLoadingTextView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void stopLoadingUI() {
+        mLoadingTextView.setVisibility(View.GONE);
     }
 
     public class TVChannelsAdapter extends RecyclerView.Adapter<TVChannelsAdapter.ViewHolder> implements View.OnClickListener {

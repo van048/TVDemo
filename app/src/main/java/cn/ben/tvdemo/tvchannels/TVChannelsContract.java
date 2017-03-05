@@ -13,6 +13,10 @@ class TVChannelsContract {
         void showTVChannels(List<TVChannels.TVChannel> tvChannels);
 
         void stopRefreshing();
+
+        void showLoadingUI();
+
+        void stopLoadingUI();
     }
 
     interface Presenter extends BasePresenter {

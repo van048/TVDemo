@@ -38,6 +38,7 @@ public class TVChannelsPresenter implements TVChannelsContract.Presenter {
 
     private void loadTVChannels() {
         mDisposables.clear();
+        mTVChannelsView.showLoadingUI();
         mTVChannelsRepository
                 .getTVChannelsWithPID(mTVTypeId)
                 .subscribeOn(mSchedulerProvider.io())
@@ -51,15 +52,18 @@ public class TVChannelsPresenter implements TVChannelsContract.Presenter {
                     @Override
                     public void onNext(List<TVChannels.TVChannel> value) {
                         mTVChannelsView.showTVChannels(value);
+                        mTVChannelsView.stopLoadingUI();
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         mTVChannelsView.showTips(e.getMessage());
+                        mTVChannelsView.stopLoadingUI();
                     }
 
                     @Override
                     public void onComplete() {
+                        mTVChannelsView.stopLoadingUI();
                     }
                 });
     }

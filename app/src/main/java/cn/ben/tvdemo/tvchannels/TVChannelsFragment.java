@@ -158,7 +158,7 @@ public class TVChannelsFragment extends BaseFragment implements TVChannelsContra
         @Override
         public void onClick(View v) {
             TVChannels.TVChannel tvChannel = (TVChannels.TVChannel) v.getTag();
-            showTVShows(tvChannel.getPId(), tvChannel.getChannelName());
+            showTVShows(tvChannel.getRel(), tvChannel.getChannelName());
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {

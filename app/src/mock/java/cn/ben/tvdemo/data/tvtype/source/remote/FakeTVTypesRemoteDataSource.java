@@ -60,7 +60,7 @@ public class FakeTVTypesRemoteDataSource implements TVTypesDataSource {
                 "    \"reason\": \"Success\"\n" +
                 "}", TVTypes.class);
         return Observable
-                .timer(5, TimeUnit.SECONDS)
+                .timer(3, TimeUnit.SECONDS)
                 .map(new Function<Long, List<TVTypes.TVType>>() {
                     @Override
                     public List<TVTypes.TVType> apply(Long aLong) throws Exception {

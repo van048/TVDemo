@@ -28,6 +28,7 @@ import cn.ben.tvdemo.tvshows.TVShowsFragment;
 
 public class TVChannelsFragment extends BaseFragment implements TVChannelsContract.View, SwipeRefreshLayout.OnRefreshListener {
     public static final String ARGUMENT_TV_TYPE_ID = "TV_TYPE_ID";
+    public static final String ARGUMENT_TV_TYPE_NAME = "TV_TYPE_NAME";
 
     @BindView(R.id.channels_recycler_view)
     RecyclerView mRecyclerView;

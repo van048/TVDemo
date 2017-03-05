@@ -36,7 +36,7 @@ public class TVChannelsActivity extends AppCompatActivity {
         ActionBar actionbar = getSupportActionBar();
         if (actionbar != null) {
             actionbar.setDisplayHomeAsUpEnabled(true);
-            actionbar.setTitle("Channels");
+            actionbar.setTitle(getIntent().getStringExtra(TVChannelsFragment.ARGUMENT_TV_TYPE_NAME));
         }
     }
 

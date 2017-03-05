@@ -134,7 +134,7 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             holder.mTextView.setText(mTVTypes.get(position).getName());
-            holder.itemView.setTag(mTVTypes.get(position).getId());
+            holder.itemView.setTag(mTVTypes.get(position));
         }
 
         @Override
@@ -150,8 +150,8 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
 
         @Override
         public void onClick(View v) {
-            String id = (String) v.getTag();
-            showTVChannels(id);
+            TVTypes.TVType tvType = (TVTypes.TVType) v.getTag();
+            showTVChannels(tvType.getId(), tvType.getName());
         }
 
         class ViewHolder extends RecyclerView.ViewHolder {
@@ -165,9 +165,10 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
         }
     }
 
-    private void showTVChannels(String id) {
+    private void showTVChannels(String id, String name) {
         Intent intent = new Intent(getContext(), TVChannelsActivity.class);
         intent.putExtra(TVChannelsFragment.ARGUMENT_TV_TYPE_ID, id);
+        intent.putExtra(TVChannelsFragment.ARGUMENT_TV_TYPE_NAME, name);
         startActivity(intent);
     }
 }

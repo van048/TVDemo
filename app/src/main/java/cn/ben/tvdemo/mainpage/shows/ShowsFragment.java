@@ -91,9 +91,10 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
 
     @Override
     public void showLoadingUI() {
-        mSwipeRefreshLayout.setEnabled(false);
-        if (mAdapter.getItemCount() <= 0)
+        if (mAdapter.getItemCount() <= 0) {
+            mSwipeRefreshLayout.setEnabled(false);
             mLoadingView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

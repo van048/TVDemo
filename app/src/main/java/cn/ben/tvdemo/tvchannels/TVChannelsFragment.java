@@ -111,12 +111,14 @@ public class TVChannelsFragment extends BaseFragment implements TVChannelsContra
 
     @Override
     public void showLoadingUI() {
+        mSwipeRefreshLayout.setEnabled(false);
         if (mAdapter.getItemCount() <= 0)
             mLoadingTextView.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void stopLoadingUI() {
+        mSwipeRefreshLayout.setEnabled(true);
         mLoadingTextView.setVisibility(View.GONE);
     }
 

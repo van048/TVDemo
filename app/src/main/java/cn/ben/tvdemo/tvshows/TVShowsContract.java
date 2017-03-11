@@ -22,6 +22,6 @@ class TVShowsContract {
     interface Presenter extends BasePresenter {
         void switchFavState(TVShows.TVShow tvShow);
 
-        void refreshTVShows(String code, int inc);
+        void refreshTVShows();
     }
 }

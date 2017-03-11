@@ -141,7 +141,7 @@ public class TVShowsFragment extends BaseFragment implements TVShowsContract.Vie
 
     @Override
     public void onRefresh() {
-        mPresenter.refreshTVShows(mChannelCode, mFragmentPos);
+        mPresenter.refreshTVShows();
     }
 
     public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> implements View.OnClickListener {
@@ -158,6 +158,7 @@ public class TVShowsFragment extends BaseFragment implements TVShowsContract.Vie
         public void onBindViewHolder(ViewHolder holder, int position) {
             holder.mNameTextView.setText(mShows.get(position).getPName());
             holder.mTimeTextView.setText(mShows.get(position).getTime());
+            holder.mFavView.setImageDrawable(getResources().getDrawable(mShows.get(position).isFav() ? android.R.drawable.star_on : android.R.drawable.star_off, getContext().getTheme()));
             holder.itemView.setTag(mShows.get(position));
         }
 

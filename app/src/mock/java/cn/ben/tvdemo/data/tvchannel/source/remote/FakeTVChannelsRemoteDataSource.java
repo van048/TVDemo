@@ -182,6 +182,8 @@ public class FakeTVChannelsRemoteDataSource implements TVChannelsDataSource {
         final List<TVChannels.TVChannel> list = tvChannels.getResult();
         for (TVChannels.TVChannel tvChannel : list) {
             tvChannel.setPId(pId);
+            tvChannel.setChannelName(pId + "_" + tvChannel.getChannelName());
+            tvChannel.setRel(pId + "_" + tvChannel.getRel());
         }
         return Observable
                 .timer(3, TimeUnit.SECONDS)

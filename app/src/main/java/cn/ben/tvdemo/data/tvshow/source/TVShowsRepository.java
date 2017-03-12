@@ -72,11 +72,11 @@ public class TVShowsRepository implements TVShowsDataSource {
         HashMap<String, Boolean> codeDirtyMap = mCacheIsDirtyMap.get(code);
         if (codeDirtyMap == null) {
             // code all dirty
-            return remote;
+            return remote.onErrorResumeNext(local);
         }
         Boolean dateDirty = codeDirtyMap.get(date);
         if (dateDirty == null || dateDirty) {
-            return remote;
+            return remote.onErrorResumeNext(local);
         }
         // now says cache is valid
         HashMap<String, List<TVShows.TVShow>> codeCacheMap = mShowsCache.get(code);

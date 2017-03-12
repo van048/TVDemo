@@ -60,11 +60,11 @@ public class TVChannelsRepository implements TVChannelsDataSource {
         Observable<List<TVChannels.TVChannel>> localTVChannels = getAndCacheLocalTVChannels(pId);
         if (mCacheIsDirtyMap == null) {
             // all dirty
-            return remoteTVChannels;
+            return remoteTVChannels.onErrorResumeNext(localTVChannels);
         }
         Boolean isCacheDirtyWithPID = mCacheIsDirtyMap.get(pId);
         if (isCacheDirtyWithPID == null || isCacheDirtyWithPID.equals(true)) {
-            return remoteTVChannels;
+            return remoteTVChannels.onErrorResumeNext(localTVChannels);
         }
         // now it says the cache is valid, so check the cache itself
         if (mCachedTVChannels == null) {

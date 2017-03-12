@@ -73,7 +73,7 @@ public class TVTypesRepository implements TVTypesDataSource {
         Observable<List<TVTypes.TVType>> remoteTVTypes = getAndSaveRemoteTVTypes();
 
         if (mCacheIsDirty) {
-            return remoteTVTypes;
+            return remoteTVTypes.onErrorResumeNext(getAndCacheLocalTVTypes());
         } else {
             // abnormal state
             return getAndCacheLocalTVTypes()

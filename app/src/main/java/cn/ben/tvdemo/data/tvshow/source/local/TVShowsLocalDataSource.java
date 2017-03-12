@@ -7,8 +7,9 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import cn.ben.tvdemo.data.DBOpenHelper;
 import cn.ben.tvdemo.data.tvshow.TVShows;
@@ -29,7 +30,7 @@ import static cn.ben.tvdemo.data.tvshow.source.local.TVShowsPersistenceContract.
 public class TVShowsLocalDataSource implements TVShowsDataSource {
     private volatile static TVShowsLocalDataSource instance = null;
     private final DBOpenHelper mDbHelper;
-    private final Executor mExecutor;
+    private final ExecutorService mExecutor;
 
     private final List<TVShows.TVShow> mGetResultTmp = new ArrayList<>();
     private volatile boolean mGetDone = false;
@@ -148,6 +149,11 @@ public class TVShowsLocalDataSource implements TVShowsDataSource {
     @Override
     public void cleanup() {
         mDbHelper.close();
+        try {
+            mExecutor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         instance = null;
     }
 

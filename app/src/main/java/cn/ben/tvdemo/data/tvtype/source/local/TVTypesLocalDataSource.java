@@ -7,8 +7,9 @@ import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import cn.ben.tvdemo.data.DBOpenHelper;
 import cn.ben.tvdemo.data.tvtype.TVTypes;
@@ -25,7 +26,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class TVTypesLocalDataSource implements TVTypesDataSource {
     private volatile static TVTypesLocalDataSource instance = null;
     private final DBOpenHelper mDbHelper;
-    private final Executor mExecutor;
+    private final ExecutorService mExecutor;
 
     private final List<TVTypes.TVType> mGetResultTmp = new ArrayList<>();
     private volatile boolean mGetDone = false;
@@ -140,6 +141,11 @@ public class TVTypesLocalDataSource implements TVTypesDataSource {
     @Override
     public void cleanup() {
         mDbHelper.close();
+        try {
+            mExecutor.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         instance = null;
     }
 }

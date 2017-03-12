@@ -37,13 +37,95 @@ public class TVShowsLocalDataSource implements TVShowsDataSource {
     }
 
     @Override
-    public Observable<List<TVShows.TVShow>> getTVShowsWithCodeAndDate(String code, String date) {
-        return Observable.empty();
+    public Observable<List<TVShows.TVShow>> getTVShowsWithCodeAndDate(final String code, final String date) {
+        final String next = TimeUtil.plusOnDate(date, 1, TimeUtil.FORMAT_YEAR_MONTH_DAY, TimeUtil.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE);
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mGetResultTmp.clear();
+
+                SQLiteDatabase readableDatabase = mDbHelper.getReadableDatabase();
+                Cursor cursor = readableDatabase.query(
+                        TABLE_NAME, null, COLUMN_CHANNEL_CODE + "=" + code + " and datetime(" + COLUMN_TIME + ")>=datetime('" + date + "') and datetime(" + COLUMN_TIME + ")<datetime('" + next + "')", null, null, null, null);
+                if (cursor != null) {
+                    while (cursor.moveToNext()) {
+                        String channelName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CHANNEL_NAME));
+                        String showName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SHOW_NAME));
+                        String url = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_URL));
+                        String time = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TIME));
+                        boolean fav = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_FAV)) == 1;
+                        TVShows.TVShow tvShow = new TVShows.TVShow(code, channelName, showName, url, time, fav);
+                        mGetResultTmp.add(tvShow);
+                    }
+                }
+                if (cursor != null) {
+                    cursor.close();
+                }
+                readableDatabase.close();
+
+                mGetDone = true;
+            }
+        });
+
+        return Observable
+                .create(new ObservableOnSubscribe<List<TVShows.TVShow>>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<List<TVShows.TVShow>> e) throws Exception {
+                        while (true) {
+                            if (mGetDone) break;
+                        }
+                        mGetDone = false;
+
+                        List<TVShows.TVShow> tvShows = new ArrayList<>(mGetResultTmp);
+                        e.onNext(tvShows);
+                    }
+                });
     }
 
     @Override
     public Observable<List<TVShows.TVShow>> getFavTVShows() {
-        return null;
+        mExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                mFavResultTmp.clear();
+
+                SQLiteDatabase readableDatabase = mDbHelper.getReadableDatabase();
+                Cursor cursor = readableDatabase.query(
+                        TABLE_NAME, null, COLUMN_FAV + "=1", null, null, null, null);
+                if (cursor != null) {
+                    while (cursor.moveToNext()) {
+                        String channelCode = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CHANNEL_CODE));
+                        String channelName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CHANNEL_NAME));
+                        String showName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SHOW_NAME));
+                        String url = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_URL));
+                        String time = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TIME));
+                        boolean fav = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_FAV)) == 1;
+                        TVShows.TVShow tvShow = new TVShows.TVShow(channelCode, channelName, showName, url, time, fav);
+                        mFavResultTmp.add(tvShow);
+                    }
+                }
+                if (cursor != null) {
+                    cursor.close();
+                }
+                readableDatabase.close();
+
+                mFavDone = true;
+            }
+        });
+
+        return Observable
+                .create(new ObservableOnSubscribe<List<TVShows.TVShow>>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<List<TVShows.TVShow>> e) throws Exception {
+                        while (true) {
+                            if (mFavDone) break;
+                        }
+                        mFavDone = false;
+
+                        List<TVShows.TVShow> tvShows = new ArrayList<>(mFavResultTmp);
+                        e.onNext(tvShows);
+                    }
+                });
     }
 
     @Override

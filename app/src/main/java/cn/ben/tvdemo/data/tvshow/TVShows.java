@@ -35,6 +35,9 @@ public class TVShows {
     }
 
     public static class TVShow {
+
+        private String channelCode; // need manually set
+
         private String cName;
 
         private String pName;
@@ -45,7 +48,8 @@ public class TVShows {
 
         private boolean isFav;
 
-        public TVShow(String cn, String pn, String url, String t, boolean fav) {
+        public TVShow(String code, String cn, String pn, String url, String t, boolean fav) {
+            channelCode = code;
             cName = cn;
             pName = pn;
             pUrl = url;
@@ -91,6 +95,14 @@ public class TVShows {
 
         public void setFav(boolean fav) {
             isFav = fav;
+        }
+
+        public String getChannelCode() {
+            return channelCode;
+        }
+
+        public void setChannelCode(String channelCode) {
+            this.channelCode = channelCode;
         }
     }
 }

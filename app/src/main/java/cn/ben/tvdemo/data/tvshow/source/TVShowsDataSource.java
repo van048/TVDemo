@@ -12,4 +12,6 @@ public interface TVShowsDataSource {
     Observable<List<TVShows.TVShow>> getFavTVShows();
 
     void cleanup();
+
+    void update(String code, String date, List<TVShows.TVShow> shows);
 }

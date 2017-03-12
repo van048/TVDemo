@@ -42,6 +42,10 @@ public class TVShowsRemoteDataSource implements TVShowsDataSource {
         instance = null;
     }
 
+    @Override
+    public void update(String code, String date, List<TVShows.TVShow> shows) {
+    }
+
     @SuppressWarnings("SameParameterValue")
     interface TVShowsService {
         @GET("TVlist")

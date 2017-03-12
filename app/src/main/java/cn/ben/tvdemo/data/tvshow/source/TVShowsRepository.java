@@ -129,6 +129,13 @@ public class TVShowsRepository implements TVShowsDataSource {
         instance = null;
     }
 
+    @Override
+    public void update(String code, String date, List<TVShows.TVShow> shows) {
+        mTVShowsRemoteDataSource.update(code, date, shows);
+        mTVShowsLocalDataSource.update(code, date, shows);
+        refreshCache(code, date, shows);
+    }
+
     public void invalidCache(String code, String date) {
         HashMap<String, Boolean> codeDirtyMap = mCacheIsDirtyMap.get(code);
         if (codeDirtyMap == null) {

@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import cn.ben.tvdemo.constant.Constants;
 import cn.ben.tvdemo.data.tvchannel.source.local.TVChannelsPersistenceContract;
+import cn.ben.tvdemo.data.tvshow.source.local.TVShowsPersistenceContract;
 import cn.ben.tvdemo.data.tvtype.source.local.TVTypesPersistenceContract;
 
 import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
@@ -31,6 +32,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(TVTypesPersistenceContract.SQL_CREATE_ENTRIES);
         db.execSQL(TVChannelsPersistenceContract.SQL_CREATE_ENTRIES);
+        db.execSQL(TVShowsPersistenceContract.SQL_CREATE_ENTRIES);
     }
 
     @Override

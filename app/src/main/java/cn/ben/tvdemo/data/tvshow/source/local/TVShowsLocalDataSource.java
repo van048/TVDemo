@@ -1,24 +1,41 @@
 package cn.ben.tvdemo.data.tvshow.source.local;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import cn.ben.tvdemo.data.DBOpenHelper;
-import cn.ben.tvdemo.data.tvchannel.TVChannels;
 import cn.ben.tvdemo.data.tvshow.TVShows;
 import cn.ben.tvdemo.data.tvshow.source.TVShowsDataSource;
+import cn.ben.tvdemo.util.TimeUtil;
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 
-// TODO: 2017/3/5
+import static cn.ben.tvdemo.data.tvshow.source.local.TVShowsPersistenceContract.TVShowEntry.COLUMN_CHANNEL_CODE;
+import static cn.ben.tvdemo.data.tvshow.source.local.TVShowsPersistenceContract.TVShowEntry.COLUMN_CHANNEL_NAME;
+import static cn.ben.tvdemo.data.tvshow.source.local.TVShowsPersistenceContract.TVShowEntry.COLUMN_FAV;
+import static cn.ben.tvdemo.data.tvshow.source.local.TVShowsPersistenceContract.TVShowEntry.COLUMN_SHOW_NAME;
+import static cn.ben.tvdemo.data.tvshow.source.local.TVShowsPersistenceContract.TVShowEntry.COLUMN_TIME;
+import static cn.ben.tvdemo.data.tvshow.source.local.TVShowsPersistenceContract.TVShowEntry.COLUMN_URL;
+import static cn.ben.tvdemo.data.tvshow.source.local.TVShowsPersistenceContract.TVShowEntry.TABLE_NAME;
+
 public class TVShowsLocalDataSource implements TVShowsDataSource {
     private volatile static TVShowsLocalDataSource instance = null;
     private final DBOpenHelper mDbHelper;
     private final Executor mExecutor;
 
-    private final List<TVChannels.TVChannel> mGetResultTmp = new ArrayList<>();
+    private final List<TVShows.TVShow> mGetResultTmp = new ArrayList<>();
     private volatile boolean mGetDone = false;
+
+    private final List<TVShows.TVShow> mFavResultTmp = new ArrayList<>();
+    private volatile boolean mFavDone = false;
 
     public static TVShowsLocalDataSource getInstance() {
         if (instance == null) {

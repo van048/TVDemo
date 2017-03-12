@@ -53,7 +53,7 @@ public class TVShowsRepository implements TVShowsDataSource {
                         .doOnNext(new Consumer<List<TVShows.TVShow>>() {
                             @Override
                             public void accept(List<TVShows.TVShow> shows) throws Exception {
-                                refreshLocalDataSource(code, date, shows);
+                                mTVShowsLocalDataSource.update(code, date, shows);
                                 refreshCache(code, date, shows);
                                 Log.d("ben", "shows from remote");
                             }
@@ -114,14 +114,10 @@ public class TVShowsRepository implements TVShowsDataSource {
         mCacheIsDirtyMap.put(code, codeDirtyMap);
     }
 
-    private void refreshLocalDataSource(String code, String date, List<TVShows.TVShow> shows) {
-        // TODO: 2017/3/5
-    }
-
     @Override
     public Observable<List<TVShows.TVShow>> getFavTVShows() {
-        // TODO: 2017/3/5
-        return null;
+        return mTVShowsRemoteDataSource
+                .getFavTVShows(); // always remote since maybe not all shows are in local
     }
 
     @Override

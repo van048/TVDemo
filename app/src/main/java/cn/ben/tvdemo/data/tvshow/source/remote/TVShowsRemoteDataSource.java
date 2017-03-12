@@ -34,7 +34,8 @@ public class TVShowsRemoteDataSource implements TVShowsDataSource {
 
     @Override
     public Observable<List<TVShows.TVShow>> getFavTVShows() {
-        return null;
+        // TODO: 2017/3/12 no server, always empty
+        return Observable.empty();
     }
 
     @Override

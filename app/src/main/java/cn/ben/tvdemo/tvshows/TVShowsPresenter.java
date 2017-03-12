@@ -43,7 +43,7 @@ public class TVShowsPresenter implements TVShowsContract.Presenter {
     private void loadTVShows() {
         mTVShowsView.showLoadingUI();
         mTVShowsRepository
-                .getTVShowsWithCodeAndDate(mTVChannelCode, TimeUtil.plusOnCurrentDate(mInc))
+                .getTVShowsWithCodeAndDate(mTVChannelCode, TimeUtil.plusOnCurrentDate(mInc, TimeUtil.FORMAT_YEAR_MONTH_DAY))
                 .subscribeOn(mSchedulerProvider.io())
                 .observeOn(mSchedulerProvider.ui())
                 .subscribe(new Observer<List<TVShows.TVShow>>() {
@@ -83,9 +83,9 @@ public class TVShowsPresenter implements TVShowsContract.Presenter {
 
     @Override
     public void refreshTVShows() {
-        mTVShowsRepository.invalidCache(mTVChannelCode, TimeUtil.plusOnCurrentDate(mInc));
+        mTVShowsRepository.invalidCache(mTVChannelCode, TimeUtil.plusOnCurrentDate(mInc, TimeUtil.FORMAT_YEAR_MONTH_DAY));
         mTVShowsRepository
-                .getTVShowsWithCodeAndDate(mTVChannelCode, TimeUtil.plusOnCurrentDate(mInc))
+                .getTVShowsWithCodeAndDate(mTVChannelCode, TimeUtil.plusOnCurrentDate(mInc, TimeUtil.FORMAT_YEAR_MONTH_DAY))
                 .subscribeOn(mSchedulerProvider.io())
                 .observeOn(mSchedulerProvider.ui())
                 .subscribe(new Observer<List<TVShows.TVShow>>() {

@@ -63,7 +63,7 @@ public class TVShowsLocalDataSource implements TVShowsDataSource {
 
                 SQLiteDatabase readableDatabase = mDbHelper.getReadableDatabase();
                 Cursor cursor = readableDatabase.query(
-                        TABLE_NAME, null, COLUMN_CHANNEL_CODE + "=" + code + " and datetime(" + COLUMN_TIME + ")>=datetime('" + date + "') and datetime(" + COLUMN_TIME + ")<datetime('" + next + "')", null, null, null, null);
+                        TABLE_NAME, null, COLUMN_CHANNEL_CODE + "=? and datetime(" + COLUMN_TIME + ")>=datetime('" + date + "') and datetime(" + COLUMN_TIME + ")<datetime('" + next + "')", new String[]{code}, null, null, null);
                 if (cursor != null) {
                     while (cursor.moveToNext()) {
                         String channelName = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CHANNEL_NAME));

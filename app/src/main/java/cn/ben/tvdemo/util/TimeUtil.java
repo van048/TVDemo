@@ -9,17 +9,21 @@ import java.util.Locale;
 public class TimeUtil {
     public static final String FORMAT_YEAR_MONTH_DAY = "yyyy-MM-dd";
     public static final String FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE = "yyyy-MM-dd HH:mm";
+    private static final Calendar mCalendar = Calendar.getInstance();
 
     private TimeUtil() {
     }
 
-    public static String plusOnCurrentDate(int inc) {
-        Date date = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.add(Calendar.DATE, inc);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FORMAT_YEAR_MONTH_DAY, Locale.getDefault());
-        return simpleDateFormat.format(calendar.getTime());
+    public static String plusOnDate(String date, int inc, String inputFormat, String outputFormat) {
+        mCalendar.setTime(string2Date(date, inputFormat));
+        mCalendar.add(Calendar.DATE, inc);
+        return date2String(mCalendar.getTime(), outputFormat);
+    }
+
+    public static String plusOnCurrentDate(int inc, String outputFormat) {
+        mCalendar.setTime(new Date());
+        mCalendar.add(Calendar.DATE, inc);
+        return date2String(mCalendar.getTime(), outputFormat);
     }
 
     public static String date2String(Date date, String format) {

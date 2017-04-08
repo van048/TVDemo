@@ -20,6 +20,7 @@ class TVShowsContract {
     }
 
     interface Presenter extends BasePresenter {
+        // TODO: 2017/4/8 0008  
         void switchFavState(TVShows.TVShow tvShow);
 
         void refreshTVShows();

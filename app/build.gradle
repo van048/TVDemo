@@ -28,8 +28,8 @@ android {
         }
     }
     android.variantFilter { variant ->
-        if (variant.buildType.name.equals('release')
-            && variant.getFlavors().get(0).name.equals('mock')) {
+        if (variant.buildType.name == 'release'
+                && variant.getFlavors().get(0).name == 'mock') {
             variant.setIgnore(true);
         }
     }

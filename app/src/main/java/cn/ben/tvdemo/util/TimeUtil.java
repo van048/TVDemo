@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+@SuppressWarnings("SameParameterValue")
 public class TimeUtil {
     public static final String FORMAT_YEAR_MONTH_DAY = "yyyy-MM-dd";
     public static final String FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE = "yyyy-MM-dd HH:mm";

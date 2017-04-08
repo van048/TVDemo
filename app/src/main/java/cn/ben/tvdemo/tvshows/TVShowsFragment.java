@@ -31,9 +31,8 @@ import cn.ben.tvdemo.data.tvshow.TVShows;
 public class TVShowsFragment extends BaseFragment implements TVShowsContract.View, SwipeRefreshLayout.OnRefreshListener {
 
     public static final String ARGUMENT_CHANNEL_CODE_KEY = "CHANNEL_CODE_KEY";
-    private static final String ARGUMENT_INC_KEY = "INC_KEY";
     public static final String ARGUMENT_CHANNEL_NAME_KEY = "CHANNEL_NAME_KEY";
-
+    private static final String ARGUMENT_INC_KEY = "INC_KEY";
     @BindView(R.id.shows_swipe_refresh)
     SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.shows_recycler_view)
@@ -45,6 +44,15 @@ public class TVShowsFragment extends BaseFragment implements TVShowsContract.Vie
     private ShowsAdapter mAdapter;
     private String mChannelCode;
     private int mFragmentPos;
+
+    public static TVShowsFragment newInstance(String code, int inc) {
+        TVShowsFragment tvShowsFragment = new TVShowsFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(ARGUMENT_CHANNEL_CODE_KEY, code);
+        bundle.putInt(ARGUMENT_INC_KEY, inc);
+        tvShowsFragment.setArguments(bundle);
+        return tvShowsFragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -121,15 +129,6 @@ public class TVShowsFragment extends BaseFragment implements TVShowsContract.Vie
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
-    public static TVShowsFragment newInstance(String code, int inc) {
-        TVShowsFragment tvShowsFragment = new TVShowsFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString(ARGUMENT_CHANNEL_CODE_KEY, code);
-        bundle.putInt(ARGUMENT_INC_KEY, inc);
-        tvShowsFragment.setArguments(bundle);
-        return tvShowsFragment;
-    }
-
     private void openUrl(String url) {
         if (TextUtils.isEmpty(url)) {
             showTips("No Live Available");
@@ -144,8 +143,8 @@ public class TVShowsFragment extends BaseFragment implements TVShowsContract.Vie
         mPresenter.refreshTVShows();
     }
 
-    public class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> implements View.OnClickListener {
-        private List<TVShows.TVShow> mShows = new ArrayList<>();
+    class ShowsAdapter extends RecyclerView.Adapter<ShowsAdapter.ViewHolder> implements View.OnClickListener {
+        private final List<TVShows.TVShow> mShows = new ArrayList<>();
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -187,15 +186,15 @@ public class TVShowsFragment extends BaseFragment implements TVShowsContract.Vie
             @BindView(R.id.shows_fav)
             ImageView mFavView;
 
+            ViewHolder(View itemView) {
+                super(itemView);
+                ButterKnife.bind(this, itemView);
+            }
+
             @OnClick(R.id.shows_fav)
             void switchFavState() {
                 int pos = getAdapterPosition();
                 mPresenter.switchFavState(mShows.get(pos));
-            }
-
-            ViewHolder(View itemView) {
-                super(itemView);
-                ButterKnife.bind(this, itemView);
             }
         }
     }

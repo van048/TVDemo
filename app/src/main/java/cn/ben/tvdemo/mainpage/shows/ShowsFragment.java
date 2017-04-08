@@ -47,7 +47,7 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
         super.onCreate(savedInstanceState);
 
         mPresenter = new ShowsPresenter(
-                Injection.provideTVTypesRepository(),
+                Injection.provideTVTypesRepository(getContext()),
                 this,
                 Injection.provideSchedulerProvider());
         mAdapter = new TVTypeAdapter();
@@ -117,6 +117,13 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
         }
     }
 
+    private void showTVChannels(String id, String name) {
+        Intent intent = new Intent(getContext(), TVChannelsActivity.class);
+        intent.putExtra(TVChannelsFragment.ARGUMENT_TV_TYPE_ID, id);
+        intent.putExtra(TVChannelsFragment.ARGUMENT_TV_TYPE_NAME, name);
+        startActivity(intent);
+    }
+
     class TVTypeAdapter extends RecyclerView.Adapter<TVTypeAdapter.ViewHolder> implements View.OnClickListener {
         private final List<TVTypes.TVType> mTVTypes;
 
@@ -163,12 +170,5 @@ public class ShowsFragment extends BaseFragment implements ShowsContract.View, S
                 ButterKnife.bind(this, itemView);
             }
         }
-    }
-
-    private void showTVChannels(String id, String name) {
-        Intent intent = new Intent(getContext(), TVChannelsActivity.class);
-        intent.putExtra(TVChannelsFragment.ARGUMENT_TV_TYPE_ID, id);
-        intent.putExtra(TVChannelsFragment.ARGUMENT_TV_TYPE_NAME, name);
-        startActivity(intent);
     }
 }

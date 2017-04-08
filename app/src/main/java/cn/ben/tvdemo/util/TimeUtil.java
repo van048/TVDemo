@@ -26,6 +26,12 @@ public class TimeUtil {
         return date2String(mCalendar.getTime(), outputFormat);
     }
 
+    public static Date plusOnCurrentDate(int inc) {
+        mCalendar.setTime(new Date());
+        mCalendar.add(Calendar.DATE, inc);
+        return mCalendar.getTime();
+    }
+
     public static String date2String(Date date, String format) {
         SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
         return sdf.format(date);
@@ -39,5 +45,17 @@ public class TimeUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static boolean areSameDay(Date dateA, Date dateB) {
+        Calendar calDateA = Calendar.getInstance();
+        calDateA.setTime(dateA);
+
+        Calendar calDateB = Calendar.getInstance();
+        calDateB.setTime(dateB);
+
+        return calDateA.get(Calendar.YEAR) == calDateB.get(Calendar.YEAR)
+                && calDateA.get(Calendar.MONTH) == calDateB.get(Calendar.MONTH)
+                && calDateA.get(Calendar.DAY_OF_MONTH) == calDateB.get(Calendar.DAY_OF_MONTH);
     }
 }

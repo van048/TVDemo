@@ -1,8 +1,5 @@
 package cn.ben.tvdemo.data;
 
-import android.content.Context;
-
-import cn.ben.tvdemo.constant.Constants;
 import cn.ben.tvdemo.data.tvchannel.source.TVChannelsRepository;
 import cn.ben.tvdemo.data.tvchannel.source.local.TVChannelsLocalDataSource;
 import cn.ben.tvdemo.data.tvchannel.source.remote.TVChannelsRemoteDataSource;
@@ -16,11 +13,10 @@ import cn.ben.tvdemo.util.schedulers.BaseSchedulerProvider;
 import cn.ben.tvdemo.util.schedulers.SchedulerProvider;
 
 public class Injection {
-    public static TVTypesRepository provideTVTypesRepository(Context context) {
+    public static TVTypesRepository provideTVTypesRepository() {
         return TVTypesRepository.getInstance(
                 TVTypesRemoteDataSource.getInstance(),
-                TVTypesLocalDataSource.getInstance(),
-                context.getSharedPreferences(Constants.SP_KEY_REPO_LAST_SAVE_LOCAL_DATE, Context.MODE_PRIVATE)
+                TVTypesLocalDataSource.getInstance()
         );
     }
 

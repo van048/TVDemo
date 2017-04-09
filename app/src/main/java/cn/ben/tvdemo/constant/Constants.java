@@ -10,6 +10,4 @@ public class Constants {
     public static final String DATABASE_DATE_TYPE = " TEXT";
     public static final String DATABASE_BOOLEAN_TYPE = " INTEGER";
     public static final String DATABASE_COMMA_SEP = ",";
-
-    public static final String SP_KEY_REPO_LAST_SAVE_LOCAL_DATE = "repo_last_save_local_date";
 }

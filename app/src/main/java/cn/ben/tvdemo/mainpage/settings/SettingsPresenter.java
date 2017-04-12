@@ -7,21 +7,33 @@ import android.support.v4.content.SharedPreferencesCompat;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class SettingsPresenter implements SettingsContract.Presenter {
+class SettingsPresenter implements SettingsContract.Presenter {
     private static final String SETTINGS_SP = "settings";
     private static final String REMIND_ME_SP_KEY = "remind";
 
     private final SettingsContract.View mSettingsView;
     private final Context mContext;
+    private boolean mPendingForPermission = false;
 
-    public SettingsPresenter(@NonNull SettingsContract.View settingsView,
-                             @NonNull Context context) {
+    SettingsPresenter(@NonNull SettingsContract.View settingsView,
+                      @NonNull Context context) {
         mSettingsView = checkNotNull(settingsView);
         mContext = checkNotNull(context);
     }
 
     @Override
     public void onUserVisible() {
+        if (mPendingForPermission) {
+            // return from permission request
+            if (mSettingsView.hasCalendarPermission()) {
+                // continue pending action
+                onRemindEnabledChanged(true);
+            } else {
+                mSettingsView.showTips("Need permission to work!");
+            }
+            mPendingForPermission = false;
+        }
+
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(SETTINGS_SP, Context.MODE_PRIVATE);
         boolean remindEnabled = sharedPreferences.getBoolean(REMIND_ME_SP_KEY, false);
 
@@ -43,5 +55,10 @@ public class SettingsPresenter implements SettingsContract.Presenter {
         SharedPreferencesCompat.EditorCompat.getInstance().apply(editor);
 
         // TODO: 2017/3/1 Notification Manager
+    }
+
+    @Override
+    public void pendingForPermission() {
+        mPendingForPermission = true;
     }
 }

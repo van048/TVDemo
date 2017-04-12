@@ -7,10 +7,16 @@ class SettingsContract {
     interface View extends BaseView<Presenter> {
 
         void setSwitchUI(boolean remindEnabled);
+
+        boolean hasCalendarPermission();
+
+        void showTips(String m);
     }
 
     interface Presenter extends BasePresenter {
 
         void onRemindEnabledChanged(boolean checked);
+
+        void pendingForPermission();
     }
 }

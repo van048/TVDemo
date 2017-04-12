@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -18,13 +19,12 @@ import butterknife.OnPageChange;
 import cn.ben.tvdemo.R;
 import cn.ben.tvdemo.data.tvchannel.source.TVChannelsRepository;
 import cn.ben.tvdemo.data.tvtype.source.TVTypesRepository;
-import cn.ben.tvdemo.mainpage.favorite.FavoriteFragment;
-import cn.ben.tvdemo.mainpage.settings.SettingsFragment;
 import cn.ben.tvdemo.mainpage.shows.ShowsFragment;
 
-import static cn.ben.tvdemo.mainpage.MainPageActivity.FragmentPosition.FAV_FRAGMENT_POS;
-import static cn.ben.tvdemo.mainpage.MainPageActivity.FragmentPosition.SETTINGS_FRAGMENT_POS;
 import static cn.ben.tvdemo.mainpage.MainPageActivity.FragmentPosition.SHOWS_FRAGMENT_POS;
+
+//import static cn.ben.tvdemo.mainpage.MainPageActivity.FragmentPosition.FAV_FRAGMENT_POS;
+//import static cn.ben.tvdemo.mainpage.MainPageActivity.FragmentPosition.SETTINGS_FRAGMENT_POS;
 
 @SuppressWarnings("WeakerAccess")
 public class MainPageActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
@@ -41,18 +41,14 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
 
     enum FragmentPosition {
         SHOWS_FRAGMENT_POS,
-        FAV_FRAGMENT_POS,
-        SETTINGS_FRAGMENT_POS
+//        FAV_FRAGMENT_POS,
+//        SETTINGS_FRAGMENT_POS
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            // TODO: 2017/2/19 load previously saved state
-            mCreatedFromSavedInstance = true;
-        } else {
-            mCreatedFromSavedInstance = false;
-        }
+        // TODO: 2017/2/19 load previously saved state
+        mCreatedFromSavedInstance = savedInstanceState != null;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_page_act);
@@ -79,6 +75,7 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
 
     private void setupBottomNavigationView() {
         mBottomNavigationView.setOnNavigationItemSelectedListener(this);
+        mBottomNavigationView.setVisibility(View.GONE);
     }
 
     @Override
@@ -95,12 +92,12 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
             case R.id.menu_item_shows:
                 mViewPager.setCurrentItem(SHOWS_FRAGMENT_POS.ordinal());
                 break;
-            case R.id.menu_item_fav:
-                mViewPager.setCurrentItem(FAV_FRAGMENT_POS.ordinal());
-                break;
-            case R.id.menu_item_settings:
-                mViewPager.setCurrentItem(SETTINGS_FRAGMENT_POS.ordinal());
-                break;
+//            case R.id.menu_item_fav:
+//                mViewPager.setCurrentItem(FAV_FRAGMENT_POS.ordinal());
+//                break;
+//            case R.id.menu_item_settings:
+//                mViewPager.setCurrentItem(SETTINGS_FRAGMENT_POS.ordinal());
+//                break;
             default:
                 break;
         }
@@ -130,10 +127,10 @@ public class MainPageActivity extends AppCompatActivity implements BottomNavigat
         public Fragment getItem(int position) {
             if (position == SHOWS_FRAGMENT_POS.ordinal()) {
                 return ShowsFragment.newInstance();
-            } else if (position == FAV_FRAGMENT_POS.ordinal()) {
-                return FavoriteFragment.newInstance();
-            } else if (position == SETTINGS_FRAGMENT_POS.ordinal()) {
-                return SettingsFragment.newInstance();
+//            } else if (position == FAV_FRAGMENT_POS.ordinal()) {
+//                return FavoriteFragment.newInstance();
+//            } else if (position == SETTINGS_FRAGMENT_POS.ordinal()) {
+//                return SettingsFragment.newInstance();
             }
             return null;
         }

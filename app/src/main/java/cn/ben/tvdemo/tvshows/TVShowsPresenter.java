@@ -1,6 +1,9 @@
 package cn.ben.tvdemo.tvshows;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 
 import java.util.List;
 
@@ -14,7 +17,7 @@ import io.reactivex.disposables.Disposable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class TVShowsPresenter implements TVShowsContract.Presenter {
+class TVShowsPresenter implements TVShowsContract.Presenter {
     private final String mTVChannelCode;
     private final int mInc;
     private final TVShowsRepository mTVShowsRepository;
@@ -77,11 +80,6 @@ public class TVShowsPresenter implements TVShowsContract.Presenter {
     }
 
     @Override
-    public void switchFavState(TVShows.TVShow tvShow) {
-
-    }
-
-    @Override
     public void refreshTVShows() {
         mTVShowsRepository.invalidCache(mTVChannelCode, TimeUtil.plusOnCurrentDate(mInc, TimeUtil.FORMAT_YEAR_MONTH_DAY));
         mTVShowsRepository
@@ -111,5 +109,21 @@ public class TVShowsPresenter implements TVShowsContract.Presenter {
                         mTVShowsView.stopRefreshing();
                     }
                 });
+    }
+
+    @Override
+    public void setupClickAlertBuilder(final Context context, AlertDialog.Builder builder, final TVShows.TVShow tvShow) {
+        builder.setTitle("Choose an action to perform");
+        final String[] choices = {"Watch live", "Add reminder"};
+        builder.setItems(choices, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == 0) {
+                    mTVShowsView.openUrl(tvShow.getPUrl());
+                } else if (which == 1) {
+                    mTVShowsView.addReminder(tvShow);
+                }
+            }
+        });
     }
 }

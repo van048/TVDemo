@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,20 +15,20 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import cn.ben.tvdemo.BaseFragment;
 import cn.ben.tvdemo.R;
 import cn.ben.tvdemo.data.Injection;
 import cn.ben.tvdemo.data.tvshow.TVShows;
+import cn.ben.tvdemo.util.TimeUtil;
 
 public class TVShowsFragment extends BaseFragment implements TVShowsContract.View, SwipeRefreshLayout.OnRefreshListener {
 
@@ -129,13 +131,27 @@ public class TVShowsFragment extends BaseFragment implements TVShowsContract.Vie
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
-    private void openUrl(String url) {
+    @Override
+    public void openUrl(String url) {
         if (TextUtils.isEmpty(url)) {
             showTips("No Live Available");
         } else {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             startActivity(intent);
         }
+    }
+
+    @Override
+    public void addReminder(TVShows.TVShow tvShow) {
+        Calendar beginTime = Calendar.getInstance();
+        beginTime.setTime(TimeUtil.string2Date(tvShow.getTime(), TimeUtil.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE));
+        Intent intent = new Intent(Intent.ACTION_INSERT)
+                .setData(CalendarContract.Events.CONTENT_URI)
+                .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis())
+                .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, beginTime.getTimeInMillis())
+                .putExtra(CalendarContract.Events.TITLE, tvShow.getCName() + "\n" + tvShow.getPName())
+                .putExtra(CalendarContract.Events.DESCRIPTION, "url: " + tvShow.getPUrl());
+        startActivity(intent);
     }
 
     @Override
@@ -157,7 +173,6 @@ public class TVShowsFragment extends BaseFragment implements TVShowsContract.Vie
         public void onBindViewHolder(ViewHolder holder, int position) {
             holder.mNameTextView.setText(mShows.get(position).getPName());
             holder.mTimeTextView.setText(mShows.get(position).getTime());
-            holder.mFavView.setImageDrawable(getResources().getDrawable(mShows.get(position).isFav() ? android.R.drawable.star_on : android.R.drawable.star_off, getContext().getTheme()));
             holder.itemView.setTag(mShows.get(position));
         }
 
@@ -168,8 +183,9 @@ public class TVShowsFragment extends BaseFragment implements TVShowsContract.Vie
 
         @Override
         public void onClick(View v) {
-            TVShows.TVShow tvShow = (TVShows.TVShow) v.getTag();
-            openUrl(tvShow.getPUrl());
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            mPresenter.setupClickAlertBuilder(getContext(), builder, (TVShows.TVShow) v.getTag());
+            builder.show();
         }
 
         void updateData(List<TVShows.TVShow> shows) {
@@ -183,18 +199,10 @@ public class TVShowsFragment extends BaseFragment implements TVShowsContract.Vie
             TextView mNameTextView;
             @BindView(R.id.shows_time)
             TextView mTimeTextView;
-            @BindView(R.id.shows_fav)
-            ImageView mFavView;
 
             ViewHolder(View itemView) {
                 super(itemView);
                 ButterKnife.bind(this, itemView);
-            }
-
-            @OnClick(R.id.shows_fav)
-            void switchFavState() {
-                int pos = getAdapterPosition();
-                mPresenter.switchFavState(mShows.get(pos));
             }
         }
     }

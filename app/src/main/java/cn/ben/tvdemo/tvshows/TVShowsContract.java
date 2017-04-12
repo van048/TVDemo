@@ -1,5 +1,8 @@
 package cn.ben.tvdemo.tvshows;
 
+import android.content.Context;
+import android.support.v7.app.AlertDialog;
+
 import java.util.List;
 
 import cn.ben.tvdemo.BasePresenter;
@@ -17,12 +20,15 @@ class TVShowsContract {
         void showTVShows(List<TVShows.TVShow> shows);
 
         void stopRefreshing();
+
+        void openUrl(String pUrl);
+
+        void addReminder(TVShows.TVShow tvShow);
     }
 
     interface Presenter extends BasePresenter {
-        // TODO: 2017/4/8 0008  
-        void switchFavState(TVShows.TVShow tvShow);
-
         void refreshTVShows();
+
+        void setupClickAlertBuilder(final Context context, AlertDialog.Builder builder, TVShows.TVShow tvShow);
     }
 }

@@ -2,13 +2,17 @@ package cn.ben.tvdemo.data.tvshow.source.remote;
 
 import java.util.List;
 
+import cn.ben.tvdemo.constant.Constants;
 import cn.ben.tvdemo.data.tvshow.TVShows;
 import cn.ben.tvdemo.data.tvshow.source.TVShowsDataSource;
 import io.reactivex.Observable;
+import io.reactivex.functions.Function;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-// TODO: 2017/3/5
 public class TVShowsRemoteDataSource implements TVShowsDataSource {
     private static final String LOAD_TV_SHOWS_BASE_URL = "http://api.avatardata.cn/TVTime/";
     private volatile static TVShowsRemoteDataSource instance = null;
@@ -29,7 +33,23 @@ public class TVShowsRemoteDataSource implements TVShowsDataSource {
 
     @Override
     public Observable<List<TVShows.TVShow>> getTVShowsWithCodeAndDate(String code, String date) {
-        return null;
+        Retrofit retrofit = new Retrofit.Builder()
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(LOAD_TV_SHOWS_BASE_URL)
+                .build();
+        TVShowsService tvShowsService = retrofit.create(TVShowsService.class);
+        Observable<TVShows> tvShows = tvShowsService.getTVShows(Constants.API_KEY, code, date);
+        return tvShows.map(new Function<TVShows, List<TVShows.TVShow>>() {
+            @Override
+            public List<TVShows.TVShow> apply(TVShows tvShows) throws Exception {
+                if (tvShows.getError_code() != 0) {
+                    throw new Exception(tvShows.getReason());
+                } else {
+                    return tvShows.getResult();
+                }
+            }
+        });
     }
 
     @Override
